@@ -1,0 +1,20 @@
+{
+  "name": "opti-api",
+  "version": "1.0.0",
+  "description": "api to interact with optimium",
+  "main": "index.js",
+  "scripts": {
+    "start": "npx tsc index.ts && node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "typescript": "^4.9.3"
+  },
+  "dependencies": {
+    "ethers": "^5.7.2",
+    "express": "^4.18.2",
+    "web3": "^1.8.1"
+  }
+}
