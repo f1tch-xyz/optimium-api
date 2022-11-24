@@ -5,7 +5,7 @@ const app = express();
 
 app.listen(8000, () => {});
 
-app.get("/api/stats", async (req: any, res: any) => {
+app.get("/stats", async (req: any, res: any) => {
 
   await Promise.all([
     getInstantaneousPrice(), 

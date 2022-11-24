@@ -40,7 +40,7 @@ var stats_1 = require("./services/stats");
 var express = require("express");
 var app = express();
 app.listen(8000, function () { });
-app.get("/api/stats", function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+app.get("/stats", function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0: return [4 /*yield*/, Promise.all([
