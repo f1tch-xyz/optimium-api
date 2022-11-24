@@ -43,7 +43,14 @@ app.listen(8000, function () { });
 app.get("/api/stats", function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     return __generator(this, function (_a) {
         switch (_a.label) {
-            case 0: return [4 /*yield*/, Promise.all([(0, stats_1.getInstantaneousPrice)(), (0, stats_1.getTotalTVL)(), (0, stats_1.getForgeYield)(), (0, stats_1.getForgeTVL)(), (0, stats_1.getPoolYield)(), (0, stats_1.getPoolTVL)()]).then(function (values) {
+            case 0: return [4 /*yield*/, Promise.all([
+                    (0, stats_1.getInstantaneousPrice)(),
+                    (0, stats_1.getTotalTVL)(),
+                    (0, stats_1.getForgeYield)(),
+                    (0, stats_1.getForgeTVL)(),
+                    (0, stats_1.getPoolYield)(),
+                    (0, stats_1.getPoolTVL)()
+                ]).then(function (values) {
                     res.send({
                         tPrice: values[0],
                         totalTVL: values[1],

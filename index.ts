@@ -7,7 +7,14 @@ app.listen(8000, () => {});
 
 app.get("/api/stats", async (req: any, res: any) => {
 
-  await Promise.all([getInstantaneousPrice(), getTotalTVL(), getForgeYield(), getForgeTVL(), getPoolYield(), getPoolTVL()]).then((values) => {
+  await Promise.all([
+    getInstantaneousPrice(), 
+    getTotalTVL(), 
+    getForgeYield(), 
+    getForgeTVL(), 
+    getPoolYield(), 
+    getPoolTVL()
+  ]).then((values) => {
     res.send({
       tPrice: values[0],
       totalTVL: values[1],

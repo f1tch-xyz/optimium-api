@@ -7,9 +7,9 @@ var utils_1 = require("ethers/lib/utils");
  * Convert 10.999 to 10999000
  */
 function toBaseUnitBN(rawAmt, decimals) {
-    var raw = new bignumber_js_1["default"](rawAmt);
-    var base = new bignumber_js_1["default"](10);
-    var decimalsBN = new bignumber_js_1["default"](decimals);
+    var raw = new bignumber_js_1.BigNumber(rawAmt);
+    var base = new bignumber_js_1.BigNumber(10);
+    var decimalsBN = new bignumber_js_1.BigNumber(decimals);
     return raw.times(base.pow(decimalsBN)).integerValue();
 }
 exports.toBaseUnitBN = toBaseUnitBN;
@@ -17,7 +17,7 @@ exports.toBaseUnitBN = toBaseUnitBN;
  * Convert 10999000 to 10.999
  */
 var toTokenUnitsBN = function (tokenAmount, tokenDecimals) {
-    return new bignumber_js_1["default"]((0, utils_1.formatUnits)(tokenAmount, tokenDecimals));
+    return new bignumber_js_1.BigNumber((0, utils_1.formatUnits)(tokenAmount, tokenDecimals));
 };
 exports.toTokenUnitsBN = toTokenUnitsBN;
 var isPos = function (amount) {
@@ -25,15 +25,15 @@ var isPos = function (amount) {
 };
 exports.isPos = isPos;
 var ownership = function (balance, totalSupply) {
-    return balance.multipliedBy(new bignumber_js_1["default"](100)).dividedBy(totalSupply);
+    return balance.multipliedBy(new bignumber_js_1.BigNumber(100)).dividedBy(totalSupply);
 };
 exports.ownership = ownership;
 /**
  * BigNumber string formatting
  */
 var formatBN = function (amount, position) {
-    if (amount.isLessThan(new bignumber_js_1["default"](1))) {
-        return pad(amount.precision(position, bignumber_js_1["default"].ROUND_UP).toFixed(), position);
+    if (amount.isLessThan(new bignumber_js_1.BigNumber(1))) {
+        return pad(amount.precision(position, bignumber_js_1.BigNumber.ROUND_UP).toFixed(), position);
     }
     return delineate(amount.toFixed(position));
 };

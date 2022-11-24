@@ -1,5 +1,5 @@
-import BigNumber from 'bignumber.js'
-import { BigNumberish } from 'ethers'
+import { BigNumber } from "bignumber.js"
+import { BigNumberish } from "ethers/lib/ethers"
 import { formatUnits } from 'ethers/lib/utils'
 
 /**
@@ -70,7 +70,7 @@ function pad(bnStr:any, position:any) {
   return bnStr
 }
 
-export function formatMoney(n) {
+export function formatMoney(n: any) {
   n = n.toPrecision(3)
   return Math.abs(Number(n)) >= 1.0e9
     ? Math.abs(Number(n)) / 1.0e9 + 'B'

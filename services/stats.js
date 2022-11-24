@@ -53,23 +53,23 @@ var number_1 = require("../utils/number");
 var utils_1 = require("ethers/lib/utils");
 var bignumber_js_1 = require("bignumber.js");
 var values_1 = require("../constants/values");
+var uniswapV2Router02 = require("../abi/uniswapV2Router02.json");
+var titanium = require("../abi/titanium.json");
+var metaPool = require("../abi/metaPool.json");
+var pool = require("../abi/pool.json");
+var dao = require("../abi/dao.json");
+var curve = require("../abi/curve.json");
 var dotenv = require("dotenv");
 dotenv.config();
 var fs = require("fs");
 var Web3 = require("web3"); // https://www.npmjs.com/package/web3
 var web3 = new Web3();
 web3.setProvider(new web3.providers.HttpProvider(process.env.ALCHEMY_URL));
-var titanium = JSON.parse(fs.readFileSync("./abi/titanium.json"));
+var uniswapRouterAbi = uniswapV2Router02.abi;
 var titaniumAbi = titanium.abi;
-var metaPool = JSON.parse(fs.readFileSync("./abi/metaPool.json"));
 var metaPoolAbi = metaPool.abi;
-var dao = JSON.parse(fs.readFileSync("./abi/dao.json"));
 var daoAbi = dao.abi;
-var curve = JSON.parse(fs.readFileSync("./abi/curve.json"));
 var curveAbi = curve.abi;
-var uniswapV2Router02 = JSON.parse(fs.readFileSync("./abi/uniswapV2Router02.json"));
-var uniswapRouterAbi = dao.abi;
-var pool = JSON.parse(fs.readFileSync("./abi/pool.json"));
 var poolAbi = pool.abi;
 var getTokenBalance = function (token, account) { return __awaiter(void 0, void 0, void 0, function () {
     var tokenContract;
@@ -586,7 +586,7 @@ var getCouponPremium = function (dao, amount) { return __awaiter(void 0, void 0,
             from: web3.eth.defaultAccount,
             gasPrice: "13837084066"
         });
-        return [2 /*return*/, daoContract.methods.couponPremium(new bignumber_js_1["default"](amount))];
+        return [2 /*return*/, daoContract.methods.couponPremium(new bignumber_js_1.BigNumber(amount))];
     });
 }); };
 exports.getCouponPremium = getCouponPremium;
@@ -772,7 +772,7 @@ var getCost = function (amount) { return __awaiter(void 0, void 0, void 0, funct
                     from: web3.eth.defaultAccount,
                     gasPrice: "13837084066"
                 });
-                return [4 /*yield*/, exchange.getAmountsIn(new bignumber_js_1["default"](amount).toFixed(), [tokens_1.USDC.addr, tokens_1.ESD.addr])];
+                return [4 /*yield*/, exchange.getAmountsIn(new bignumber_js_1.BigNumber(amount).toFixed(), [tokens_1.USDC.addr, tokens_1.ESD.addr])];
             case 1:
                 _a = _b.sent(), inputAmount = _a[0], _ = _a[1];
                 return [2 /*return*/, inputAmount];
@@ -789,7 +789,7 @@ var getProceeds = function (amount) { return __awaiter(void 0, void 0, void 0, f
                     from: web3.eth.defaultAccount,
                     gasPrice: "13837084066"
                 });
-                return [4 /*yield*/, exchange.getAmountsOut(new bignumber_js_1["default"](amount).toFixed(), [tokens_1.ESD.addr, tokens_1.USDC.addr])];
+                return [4 /*yield*/, exchange.getAmountsOut(new bignumber_js_1.BigNumber(amount).toFixed(), [tokens_1.ESD.addr, tokens_1.USDC.addr])];
             case 1:
                 _a = _b.sent(), _ = _a[0], outputAmount = _a[1];
                 return [2 /*return*/, outputAmount];
@@ -1063,8 +1063,9 @@ var getForgeYield = function () { return __awaiter(void 0, void 0, void 0, funct
                 ])];
             case 1:
                 _a = _b.sent(), totalBonded = _a[0], totalSupply = _a[1];
-                return [2 /*return*/, new bignumber_js_1["default"](0.005)
-                        .div(new bignumber_js_1["default"](totalBonded.toString()).div(new bignumber_js_1["default"](totalSupply.toString())))
+                return [2 /*return*/, new bignumber_js_1.BigNumber(0.005)
+                        .div(new bignumber_js_1.BigNumber(totalBonded.toString())
+                        .div(new bignumber_js_1.BigNumber(totalSupply.toString())))
                         .times(100)];
         }
     });
@@ -1083,13 +1084,13 @@ var getPoolYield = function () { return __awaiter(void 0, void 0, void 0, functi
             case 1:
                 _a = _d.sent(), tPrice = _a[0], regs = _a[1], tvl = _a[2];
                 if ((_b = regs[0].data) === null || _b === void 0 ? void 0 : _b.newBonded) {
-                    return [2 /*return*/, new bignumber_js_1["default"]((_c = regs[0].data) === null || _c === void 0 ? void 0 : _c.newBonded)
+                    return [2 /*return*/, new bignumber_js_1.BigNumber((_c = regs[0].data) === null || _c === void 0 ? void 0 : _c.newBonded)
                             .div(tvl)
                             .times(tPrice)
                             .times(100)];
                 }
                 else {
-                    return [2 /*return*/, (0, number_1.formatBN)(new bignumber_js_1["default"](0), 2)];
+                    return [2 /*return*/, (0, number_1.formatBN)(new bignumber_js_1.BigNumber(0), 2)];
                 }
                 return [2 /*return*/];
         }
@@ -1106,8 +1107,8 @@ var getForgeTVL = function () { return __awaiter(void 0, void 0, void 0, functio
                 ])];
             case 1:
                 _a = _b.sent(), totalBonded = _a[0], price = _a[1];
-                return [2 /*return*/, new bignumber_js_1["default"]((0, utils_1.formatEther)(totalBonded))
-                        .times(new bignumber_js_1["default"](price))
+                return [2 /*return*/, new bignumber_js_1.BigNumber((0, utils_1.formatEther)(totalBonded))
+                        .times(new bignumber_js_1.BigNumber(price))
                         .toFixed()];
         }
     });
@@ -1126,9 +1127,9 @@ var getPoolTVL = function () { return __awaiter(void 0, void 0, void 0, function
                 ])];
             case 1:
                 _a = _b.sent(), reserves = _a[0], threeCRVPrice = _a[1], price = _a[2], totalLpPool = _a[3], totalLpSupply = _a[4];
-                return [2 /*return*/, new bignumber_js_1["default"]((0, utils_1.formatEther)(reserves[0]))
+                return [2 /*return*/, new bignumber_js_1.BigNumber((0, utils_1.formatEther)(reserves[0]))
                         .times(price)
-                        .plus(new bignumber_js_1["default"]((0, utils_1.formatEther)(reserves[1])).times(new bignumber_js_1["default"]((0, utils_1.formatEther)(threeCRVPrice))))
+                        .plus(new bignumber_js_1.BigNumber((0, utils_1.formatEther)(reserves[1])).times(new bignumber_js_1.BigNumber((0, utils_1.formatEther)(threeCRVPrice))))
                         .div((0, utils_1.formatEther)(totalLpSupply))
                         .times((0, utils_1.formatEther)(totalLpPool))
                         .toFixed()];
@@ -1146,7 +1147,7 @@ var getTotalTVL = function () { return __awaiter(void 0, void 0, void 0, functio
                 ])];
             case 1:
                 _a = _b.sent(), forgeTotal = _a[0], poolTotal = _a[1];
-                return [2 /*return*/, (0, number_1.formatBN)(new bignumber_js_1["default"](forgeTotal).plus(poolTotal), 2)];
+                return [2 /*return*/, (0, number_1.formatBN)(new bignumber_js_1.BigNumber(forgeTotal).plus(poolTotal), 2)];
         }
     });
 }); };

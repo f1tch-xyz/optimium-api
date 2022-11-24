@@ -2,8 +2,14 @@ import { UniswapV2Router02 } from "../constants/contracts";
 import { ESD, ESDS, UNI, USDC } from "../constants/tokens";
 import { formatBN, toBaseUnitBN, toTokenUnitsBN } from "../utils/number";
 import { formatEther, parseEther } from "ethers/lib/utils";
-import BigNumber from "bignumber.js";
+import { BigNumber } from "bignumber.js"
 import { POOL } from "../constants/values";
+import * as uniswapV2Router02 from "../abi/uniswapV2Router02.json";
+import * as titanium from "../abi/titanium.json";
+import * as metaPool from "../abi/metaPool.json";
+import * as pool from "../abi/pool.json";
+import * as dao from "../abi/dao.json";
+import * as curve from "../abi/curve.json";
 import * as dotenv from 'dotenv';
 
 dotenv.config()
@@ -15,24 +21,11 @@ let web3 = new Web3();
 
 web3.setProvider(new web3.providers.HttpProvider(process.env.ALCHEMY_URL));
 
-let titanium = JSON.parse(fs.readFileSync("./abi/titanium.json"));
+let uniswapRouterAbi = uniswapV2Router02.abi;
 let titaniumAbi = titanium.abi;
-
-let metaPool = JSON.parse(fs.readFileSync("./abi/metaPool.json"));
 let metaPoolAbi = metaPool.abi;
-
-let dao = JSON.parse(fs.readFileSync("./abi/dao.json"));
 let daoAbi = dao.abi;
-
-let curve = JSON.parse(fs.readFileSync("./abi/curve.json"));
 let curveAbi = curve.abi;
-
-let uniswapV2Router02 = JSON.parse(
-  fs.readFileSync("./abi/uniswapV2Router02.json")
-);
-let uniswapRouterAbi = dao.abi;
-
-let pool = JSON.parse(fs.readFileSync("./abi/pool.json"));
 let poolAbi = pool.abi;
 
 export const getTokenBalance = async (token: any, account: any) => {
@@ -552,7 +545,7 @@ export const getCouponEpochs = async (dao: any, account: any) => {
 
   const couponEpochs = [
     ...events
-      .reduce((map: any, event) => {
+      .reduce((map: any, event: any) => {
         const { account, epoch, amount } = event;
         const prev = map.get(epoch);
 
@@ -646,7 +639,7 @@ export const getAllRegulations = async (dao: any) => {
       }))
     );
 
-  return events.sort((a, b) => b.data?.epoch - a.data?.epoch);
+  return events.sort((a: any, b: any) => b.data?.epoch - a.data?.epoch);
 };
 
 // Uniswap Protocol
@@ -890,11 +883,8 @@ export const getForgeYield = async () => {
   ]);
 
   return new BigNumber(0.005)
-    .div(
-      new BigNumber(totalBonded.toString()).div(
-        new BigNumber(totalSupply.toString())
-      )
-    )
+    .div(new BigNumber(totalBonded.toString())
+    .div(new BigNumber(totalSupply.toString())))
     .times(100);
 };
 
