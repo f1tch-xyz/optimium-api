@@ -637,8 +637,15 @@ var getCouponEpochs = function (dao, account) { return __awaiter(void 0, void 0,
                 };
                 daoContract = new web3.eth.Contract(daoAbi, dao, provider);
                 blockNumber = 16022755;
-                purchaseP = daoContract.methods.queryFilter(daoContract.methods.filters.CouponPurchase(), blockNumber);
-                transferP = daoContract.methods.queryFilter(daoContract.methods.filters.CouponTransfer(), blockNumber);
+                console.log("blockNumber", blockNumber);
+                purchaseP = daoContract.getPastEvents("CouponPurchase", {
+                    fromBlock: blockNumber
+                });
+                transferP = daoContract.getPastEvents("CouponTransfer", {
+                    fromBlock: blockNumber
+                });
+                console.log("purchaseP", purchaseP);
+                console.log("transferP", transferP);
                 return [4 /*yield*/, Promise.all([purchaseP, transferP])];
             case 1:
                 _a = _b.sent(), bought = _a[0], given = _a[1];
@@ -719,29 +726,41 @@ var getAllRegulations = function (dao) { return __awaiter(void 0, void 0, void 0
                     gasPrice: "13837084066"
                 };
                 daoContract = new web3.eth.Contract(daoAbi, dao, provider);
-                block = web3.eth.getBlockNumber();
-                blockNumber = block - 3000;
-                increaseP = daoContract.methods.queryFilter(daoContract.methods.filters.SupplyIncrease(), blockNumber);
-                decreaseP = daoContract.methods.queryFilter(daoContract.methods.filters.SupplyDecrease(), blockNumber);
-                neutralP = daoContract.methods.queryFilter(daoContract.filters.SupplyNeutral(), blockNumber);
+                return [4 /*yield*/, web3.eth.getBlockNumber().then(function (block) { return block; })];
+            case 1:
+                block = _b.sent();
+                blockNumber = block - 10000;
+                increaseP = daoContract.getPastEvents("SupplyIncrease", {
+                    fromBlock: blockNumber,
+                    toBlock: block
+                });
+                decreaseP = daoContract.getPastEvents("SupplyDecrease", {
+                    fromBlock: blockNumber,
+                    toBlock: block
+                });
+                neutralP = daoContract.getPastEvents("SupplyNeutral", {
+                    fromBlock: blockNumber,
+                    toBlock: block
+                });
                 return [4 /*yield*/, Promise.all([
                         increaseP,
                         decreaseP,
                         neutralP,
                     ])];
-            case 1:
+            case 2:
                 _a = _b.sent(), increase = _a[0], decrease = _a[1], neutral = _a[2];
+                console.log('increase', increase);
                 events = increase
-                    .map(function (e) { return ({ type: "INCREASE", data: e.args }); })
+                    .map(function (e) { return ({ type: "INCREASE", data: e.returnValues }); })
                     .concat(decrease.map(function (e) { return ({
                     type: "DECREASE",
-                    data: e.args
+                    data: e.returnValues
                 }); }))
                     .concat(neutral.map(function (e) { return ({
                     type: "NEUTRAL",
-                    data: e.args
+                    data: e.returnValues
                 }); }));
-                return [2 /*return*/, events.sort(function (a, b) { return b.data.epoch - a.data.epoch; })];
+                return [2 /*return*/, events.sort(function (a, b) { var _a, _b; return ((_a = b.data) === null || _a === void 0 ? void 0 : _a.epoch) - ((_b = a.data) === null || _b === void 0 ? void 0 : _b.epoch); })];
         }
     });
 }); };
@@ -1056,19 +1075,26 @@ var getForgeYield = function () { return __awaiter(void 0, void 0, void 0, funct
 exports.getForgeYield = getForgeYield;
 var getPoolYield = function () { return __awaiter(void 0, void 0, void 0, function () {
     var _a, tPrice, regs, tvl;
-    return __generator(this, function (_b) {
-        switch (_b.label) {
+    var _b, _c;
+    return __generator(this, function (_d) {
+        switch (_d.label) {
             case 0: return [4 /*yield*/, Promise.all([
                     (0, exports.getInstantaneousPrice)(),
                     (0, exports.getAllRegulations)(tokens_1.ESDS.addr),
                     (0, exports.getPoolTVL)(),
                 ])];
             case 1:
-                _a = _b.sent(), tPrice = _a[0], regs = _a[1], tvl = _a[2];
-                return [2 /*return*/, tPrice
-                        .times(new bignumber_js_1["default"]((0, utils_1.formatEther)(regs[0].data.newBonded)).div(2))
-                        .div(tvl)
-                        .times(100)];
+                _a = _d.sent(), tPrice = _a[0], regs = _a[1], tvl = _a[2];
+                if ((_b = regs[0].data) === null || _b === void 0 ? void 0 : _b.newBonded) {
+                    return [2 /*return*/, new bignumber_js_1["default"]((_c = regs[0].data) === null || _c === void 0 ? void 0 : _c.newBonded)
+                            .div(tvl)
+                            .times(tPrice)
+                            .times(100)];
+                }
+                else {
+                    return [2 /*return*/, (0, number_1.formatBN)(new bignumber_js_1["default"](0), 2)];
+                }
+                return [2 /*return*/];
         }
     });
 }); };
@@ -1123,7 +1149,6 @@ var getTotalTVL = function () { return __awaiter(void 0, void 0, void 0, functio
                 ])];
             case 1:
                 _a = _b.sent(), forgeTotal = _a[0], poolTotal = _a[1];
-                console.log("forgeTotal", forgeTotal);
                 return [2 /*return*/, (0, number_1.formatBN)(new bignumber_js_1["default"](forgeTotal).plus(poolTotal), 2)];
         }
     });

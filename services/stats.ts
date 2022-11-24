@@ -525,16 +525,17 @@ export const getCouponEpochs = async (dao: any, account: any) => {
   const daoContract = new web3.eth.Contract(daoAbi, dao, provider);
   // const block = await provider.getBlockNumber()
   const blockNumber = 16022755;
-  const purchaseP = daoContract.methods.queryFilter(
-    daoContract.methods.filters.CouponPurchase(),
-    blockNumber
-  );
-  const transferP = daoContract.methods.queryFilter(
-    daoContract.methods.filters.CouponTransfer(),
-    blockNumber
-  );
+
+  const purchaseP = daoContract.getPastEvents("CouponPurchase", {
+    fromBlock: blockNumber
+  })
+
+  const transferP = daoContract.getPastEvents("CouponTransfer", {
+    fromBlock: blockNumber
+  })
+
   const [bought, given] = await Promise.all([purchaseP, transferP]);
-  console.log(bought, given);
+  
   const events = bought
     .map((e: any) => ({
       account: e.args.account,
@@ -606,43 +607,46 @@ export const getAllRegulations = async (dao: any) => {
     gasPrice: "13837084066",
   };
   const daoContract = new web3.eth.Contract(daoAbi, dao, provider);
-  const block = web3.eth.getBlockNumber();
-  const blockNumber = block - 3000;
-  const increaseP = daoContract.methods.queryFilter(
-    daoContract.methods.filters.SupplyIncrease(),
-    blockNumber
-  );
-  const decreaseP = daoContract.methods.queryFilter(
-    daoContract.methods.filters.SupplyDecrease(),
-    blockNumber
-  );
-  const neutralP = daoContract.methods.queryFilter(
-    daoContract.filters.SupplyNeutral(),
-    blockNumber
-  );
+  const block = await web3.eth.getBlockNumber().then((block: any) => block);
+  const blockNumber = block - 10000;
+  
+  const increaseP = daoContract.getPastEvents("SupplyIncrease", {
+    fromBlock: blockNumber,
+    toBlock: block
+  })
+
+  const decreaseP = daoContract.getPastEvents("SupplyDecrease", {
+    fromBlock: blockNumber,
+    toBlock: block
+  })
+
+  const neutralP = daoContract.getPastEvents("SupplyNeutral", {
+    fromBlock: blockNumber,
+    toBlock: block
+  })
 
   const [increase, decrease, neutral] = await Promise.all([
     increaseP,
     decreaseP,
     neutralP,
   ]);
-
+  
   const events = increase
-    .map((e: any) => ({ type: "INCREASE", data: e.args }))
+    .map((e: any) => ({ type: "INCREASE", data: e.returnValues }))
     .concat(
       decrease.map((e: any) => ({
         type: "DECREASE",
-        data: e.args,
+        data: e.returnValues,
       }))
     )
     .concat(
       neutral.map((e: any) => ({
         type: "NEUTRAL",
-        data: e.args,
+        data: e.returnValues,
       }))
     );
 
-  return events.sort((a, b) => b.data.epoch - a.data.epoch);
+  return events.sort((a, b) => b.data?.epoch - a.data?.epoch);
 };
 
 // Uniswap Protocol
@@ -901,10 +905,14 @@ export const getPoolYield = async () => {
     getPoolTVL(),
   ]);
 
-  return tPrice
-    .times(new BigNumber(formatEther(regs[0].data.newBonded)).div(2))
-    .div(tvl)
-    .times(100);
+  if(regs[0].data?.newBonded) {
+    return new BigNumber(regs[0].data?.newBonded)
+      .div(tvl)
+      .times(tPrice)
+      .times(100);
+  } else {
+    return formatBN(new BigNumber(0), 2);
+  }
 };
 
 export const getForgeTVL = async () => {
@@ -945,8 +953,6 @@ export const getTotalTVL = async () => {
     getForgeTVL(),
     getPoolTVL(),
   ]);
-
-  console.log("forgeTotal", forgeTotal);
 
   return formatBN(new BigNumber(forgeTotal).plus(poolTotal), 2);
 };
