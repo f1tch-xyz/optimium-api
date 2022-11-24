@@ -4,16 +4,16 @@ import { formatBN, toBaseUnitBN, toTokenUnitsBN } from "../utils/number";
 import { formatEther, parseEther } from "ethers/lib/utils";
 import BigNumber from "bignumber.js";
 import { POOL } from "../constants/values";
+import * as dotenv from 'dotenv';
+
+dotenv.config()
 
 let fs = require("fs");
 let Web3 = require("web3"); // https://www.npmjs.com/package/web3
 
 let web3 = new Web3();
-web3.setProvider(
-  new web3.providers.HttpProvider(
-    "https://eth-mainnet.g.alchemy.com/v2/A_kmxXLW8oR7ot5VEGBQYpMD9WxyQtHb"
-  )
-);
+
+web3.setProvider(new web3.providers.HttpProvider(process.env.ALCHEMY_URL));
 
 let titanium = JSON.parse(fs.readFileSync("./abi/titanium.json"));
 let titaniumAbi = titanium.abi;

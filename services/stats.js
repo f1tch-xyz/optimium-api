@@ -53,10 +53,13 @@ var number_1 = require("../utils/number");
 var utils_1 = require("ethers/lib/utils");
 var bignumber_js_1 = require("bignumber.js");
 var values_1 = require("../constants/values");
+var dotenv = require("dotenv");
+dotenv.config();
 var fs = require("fs");
 var Web3 = require("web3"); // https://www.npmjs.com/package/web3
 var web3 = new Web3();
-web3.setProvider(new web3.providers.HttpProvider("https://eth-mainnet.g.alchemy.com/v2/A_kmxXLW8oR7ot5VEGBQYpMD9WxyQtHb"));
+console.log('process.env.ALCHEMY_URL', process.env.ALCHEMY_URL);
+web3.setProvider(new web3.providers.HttpProvider(process.env.ALCHEMY_URL));
 var titanium = JSON.parse(fs.readFileSync("./abi/titanium.json"));
 var titaniumAbi = titanium.abi;
 var metaPool = JSON.parse(fs.readFileSync("./abi/metaPool.json"));
@@ -637,19 +640,15 @@ var getCouponEpochs = function (dao, account) { return __awaiter(void 0, void 0,
                 };
                 daoContract = new web3.eth.Contract(daoAbi, dao, provider);
                 blockNumber = 16022755;
-                console.log("blockNumber", blockNumber);
                 purchaseP = daoContract.getPastEvents("CouponPurchase", {
                     fromBlock: blockNumber
                 });
                 transferP = daoContract.getPastEvents("CouponTransfer", {
                     fromBlock: blockNumber
                 });
-                console.log("purchaseP", purchaseP);
-                console.log("transferP", transferP);
                 return [4 /*yield*/, Promise.all([purchaseP, transferP])];
             case 1:
                 _a = _b.sent(), bought = _a[0], given = _a[1];
-                console.log(bought, given);
                 events = bought
                     .map(function (e) { return ({
                     account: e.args.account,
@@ -749,7 +748,6 @@ var getAllRegulations = function (dao) { return __awaiter(void 0, void 0, void 0
                     ])];
             case 2:
                 _a = _b.sent(), increase = _a[0], decrease = _a[1], neutral = _a[2];
-                console.log('increase', increase);
                 events = increase
                     .map(function (e) { return ({ type: "INCREASE", data: e.returnValues }); })
                     .concat(decrease.map(function (e) { return ({
