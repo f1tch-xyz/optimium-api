@@ -59,3 +59,4 @@ app.get("/api/stats", function (req, res) { return __awaiter(void 0, void 0, voi
         }
     });
 }); });
+module.exports = app;

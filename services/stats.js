@@ -58,7 +58,6 @@ dotenv.config();
 var fs = require("fs");
 var Web3 = require("web3"); // https://www.npmjs.com/package/web3
 var web3 = new Web3();
-console.log('process.env.ALCHEMY_URL', process.env.ALCHEMY_URL);
 web3.setProvider(new web3.providers.HttpProvider(process.env.ALCHEMY_URL));
 var titanium = JSON.parse(fs.readFileSync("./abi/titanium.json"));
 var titaniumAbi = titanium.abi;

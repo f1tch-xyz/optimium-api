@@ -18,3 +18,5 @@ app.get("/api/stats", async (req: any, res: any) => {
     });
   });
 });
+
+module.exports = app;
