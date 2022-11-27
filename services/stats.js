@@ -45,57 +45,51 @@ var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
     return to.concat(ar || Array.prototype.slice.call(from));
 };
 exports.__esModule = true;
-exports.getPoolTotalClaimable = exports.getPoolTotalRewarded = exports.getPoolTotalBonded = exports.getPoolBalanceOfClaimable = exports.getPoolBalanceOfRewarded = exports.getPoolBalanceOfStaged = exports.getPoolBalanceOfBonded = exports.getPoolStatusOf = exports.getToken0 = exports.getInstantaneousPrice = exports.getThreeCRVPrice = exports.getReserves = exports.getProceeds = exports.getCost = exports.getAllRegulations = exports.getAllProposals = exports.getCouponEpochs = exports.getPool = exports.getImplementation = exports.getCouponPremium = exports.getBatchCouponsExpiration = exports.getCouponsExpiration = exports.getOutstandingCoupons = exports.getBatchBalanceOfCouponsUnderlying = exports.getBalanceOfCouponsUnderlying = exports.getBatchBalanceOfCoupons = exports.getBalanceOfCoupons = exports.getRecordedVote = exports.getIsInitialized = exports.getPeriodFor = exports.getStartFor = exports.getRejectFor = exports.getApproveFor = exports.getTotalBondedAt = exports.getTotalStaged = exports.getTotalBonded = exports.getTotalCouponsUnderlying = exports.getTotalCoupons = exports.getTotalRedeemable = exports.getTotalDebt = exports.getEpochTime = exports.getEpoch = exports.getLockedUntil = exports.getFluidUntil = exports.getStatusOf = exports.getBalanceOfStaged = exports.getBalanceBonded = exports.getTokenAllowance = exports.getTokenTotalSupply = exports.getTokenBalance = void 0;
-exports.getTotalTVL = exports.getPoolTVL = exports.getForgeTVL = exports.getPoolYield = exports.getForgeYield = exports.getPoolFluidUntil = void 0;
-var contracts_1 = require("../constants/contracts");
-var tokens_1 = require("../constants/tokens");
-var number_1 = require("../utils/number");
-var utils_1 = require("ethers/lib/utils");
+exports.getForgeYield = exports.getPoolFluidUntil = exports.getPoolTotalClaimable = exports.getPoolTotalRewarded = exports.getPoolTotalBonded = exports.getPoolBalanceOfClaimable = exports.getPoolBalanceOfRewarded = exports.getPoolBalanceOfStaged = exports.getPoolBalanceOfBonded = exports.getPoolStatusOf = exports.getToken0 = exports.getInstantaneousPrice = exports.getThreeCRVPrice = exports.getReserves = exports.getAllRegulations = exports.getAllProposals = exports.getCouponEpochs = exports.getPool = exports.getImplementation = exports.getCouponPremium = exports.getBatchCouponsExpiration = exports.getCouponsExpiration = exports.getOutstandingCoupons = exports.getBatchBalanceOfCouponsUnderlying = exports.getBalanceOfCouponsUnderlying = exports.getBatchBalanceOfCoupons = exports.getBalanceOfCoupons = exports.getRecordedVote = exports.getIsInitialized = exports.getPeriodFor = exports.getStartFor = exports.getRejectFor = exports.getApproveFor = exports.getTotalBondedAt = exports.getTotalStaged = exports.getTotalBonded = exports.getTotalCouponsUnderlying = exports.getTotalCoupons = exports.getTotalRedeemable = exports.getTotalDebt = exports.getEpochTime = exports.getEpoch = exports.getLockedUntil = exports.getFluidUntil = exports.getStatusOf = exports.getBalanceOfStaged = exports.getBalanceBonded = exports.getTokenAllowance = exports.getTokenTotalSupply = exports.getTokenBalance = void 0;
+exports.getStats = exports.getTotalTVL = exports.getPoolTVL = exports.getForgeTVL = exports.getPoolYield = void 0;
 var bignumber_js_1 = require("bignumber.js");
+var ethers_1 = require("ethers");
+var utils_1 = require("ethers/lib/utils");
+var tokens_1 = require("../constants/tokens");
 var values_1 = require("../constants/values");
-var uniswapV2Router02 = require("../abi/uniswapV2Router02.json");
-var titanium = require("../abi/titanium.json");
+var number_1 = require("../utils/number");
+var dao = require("../abi/dao.json");
 var metaPool = require("../abi/metaPool.json");
 var pool = require("../abi/pool.json");
-var dao = require("../abi/dao.json");
-var curve = require("../abi/curve.json");
-var dotenv = require("dotenv");
-dotenv.config();
-var fs = require("fs");
-var Web3 = require("web3"); // https://www.npmjs.com/package/web3
-var web3 = new Web3();
-web3.setProvider(new web3.providers.HttpProvider(process.env.ALCHEMY_URL));
-var uniswapRouterAbi = uniswapV2Router02.abi;
-var titaniumAbi = titanium.abi;
-var metaPoolAbi = metaPool.abi;
+var titanium = require("../abi/titanium.json");
 var daoAbi = dao.abi;
-var curveAbi = curve.abi;
+var metaPoolAbi = metaPool.abi;
 var poolAbi = pool.abi;
+var titaniumAbi = titanium.abi;
+var provider = new ethers_1.ethers.providers.AlchemyProvider("optimism", "I_98yCaFloxo_XxxRCjQ1tanl4IcVXs3");
+/**
+ *
+ * @param {string} token address
+ * @param {string} account address
+ * @return {Promise<string>}
+ */
 var getTokenBalance = function (token, account) { return __awaiter(void 0, void 0, void 0, function () {
     var tokenContract;
     return __generator(this, function (_a) {
         if (account === "")
             return [2 /*return*/, "0"];
-        tokenContract = new web3.eth.Contract(titaniumAbi, token, {
-            from: web3.eth.defaultAccount,
-            gasPrice: "13837084066"
-        });
-        return [2 /*return*/, tokenContract.methods
-                .balanceOf(account)
-                .call({ from: web3.eth.defaultAccount, gasPrice: "13837084066" })];
+        tokenContract = new ethers_1.Contract(token, titaniumAbi, provider);
+        return [2 /*return*/, tokenContract.balanceOf(account)];
     });
 }); };
 exports.getTokenBalance = getTokenBalance;
 var getTokenTotalSupply = function (token) { return __awaiter(void 0, void 0, void 0, function () {
-    var tokenContract;
-    return __generator(this, function (_a) {
-        tokenContract = new web3.eth.Contract(titaniumAbi, token, {
-            from: web3.eth.defaultAccount,
-            gasPrice: "13837084066"
-        });
-        return [2 /*return*/, tokenContract.methods
-                .totalSupply()
-                .call({ from: web3.eth.defaultAccount, gasPrice: "13837084066" })];
+    var tokenContract, _a, _b;
+    return __generator(this, function (_c) {
+        switch (_c.label) {
+            case 0:
+                _a = ethers_1.Contract.bind;
+                _b = [void 0, token, titaniumAbi];
+                return [4 /*yield*/, provider];
+            case 1:
+                tokenContract = new (_a.apply(ethers_1.Contract, _b.concat([_c.sent()])))();
+                return [2 /*return*/, tokenContract.totalSupply()];
+        }
     });
 }); };
 exports.getTokenTotalSupply = getTokenTotalSupply;
@@ -109,10 +103,7 @@ exports.getTokenTotalSupply = getTokenTotalSupply;
 var getTokenAllowance = function (token, account, spender) { return __awaiter(void 0, void 0, void 0, function () {
     var tokenContract;
     return __generator(this, function (_a) {
-        tokenContract = new web3.eth.Contract(metaPoolAbi, token, {
-            from: web3.eth.defaultAccount,
-            gasPrice: "13837084066"
-        });
+        tokenContract = new ethers_1.Contract(token, titaniumAbi, provider);
         return [2 /*return*/, tokenContract.allowance(account, spender)];
     });
 }); };
@@ -129,11 +120,8 @@ var getBalanceBonded = function (dao, account) { return __awaiter(void 0, void 0
     return __generator(this, function (_a) {
         if (account === "")
             return [2 /*return*/, "0"];
-        daoContract = new web3.eth.Contract(daoAbi, dao, {
-            from: web3.eth.defaultAccount,
-            gasPrice: "13837084066"
-        });
-        return [2 /*return*/, daoContract.methods.balanceOfBonded(account)];
+        daoContract = new ethers_1.Contract(dao, daoAbi, provider);
+        return [2 /*return*/, daoContract.balanceOfBonded(account)];
     });
 }); };
 exports.getBalanceBonded = getBalanceBonded;
@@ -146,11 +134,8 @@ exports.getBalanceBonded = getBalanceBonded;
 var getBalanceOfStaged = function (dao, account) { return __awaiter(void 0, void 0, void 0, function () {
     var daoContract;
     return __generator(this, function (_a) {
-        daoContract = new web3.eth.Contract(daoAbi, dao, {
-            from: web3.eth.defaultAccount,
-            gasPrice: "13837084066"
-        });
-        return [2 /*return*/, daoContract.methods.balanceOfStaged(account)];
+        daoContract = new ethers_1.Contract(dao, daoAbi, provider);
+        return [2 /*return*/, daoContract.balanceOfStaged(account)];
     });
 }); };
 exports.getBalanceOfStaged = getBalanceOfStaged;
@@ -163,11 +148,8 @@ exports.getBalanceOfStaged = getBalanceOfStaged;
 var getStatusOf = function (dao, account) { return __awaiter(void 0, void 0, void 0, function () {
     var daoContract;
     return __generator(this, function (_a) {
-        daoContract = new web3.eth.Contract(daoAbi, dao, {
-            from: web3.eth.defaultAccount,
-            gasPrice: "13837084066"
-        });
-        return [2 /*return*/, daoContract.methods.statusOf(account)];
+        daoContract = new ethers_1.Contract(dao, daoAbi, provider);
+        return [2 /*return*/, daoContract.statusOf(account)];
     });
 }); };
 exports.getStatusOf = getStatusOf;
@@ -180,11 +162,8 @@ exports.getStatusOf = getStatusOf;
 var getFluidUntil = function (dao, account) { return __awaiter(void 0, void 0, void 0, function () {
     var daoContract;
     return __generator(this, function (_a) {
-        daoContract = new web3.eth.Contract(daoAbi, dao, {
-            from: web3.eth.defaultAccount,
-            gasPrice: "13837084066"
-        });
-        return [2 /*return*/, daoContract.methods.fluidUntil(account)];
+        daoContract = new ethers_1.Contract(dao, daoAbi, provider);
+        return [2 /*return*/, daoContract.fluidUntil(account)];
     });
 }); };
 exports.getFluidUntil = getFluidUntil;
@@ -197,11 +176,8 @@ exports.getFluidUntil = getFluidUntil;
 var getLockedUntil = function (dao, account) { return __awaiter(void 0, void 0, void 0, function () {
     var daoContract;
     return __generator(this, function (_a) {
-        daoContract = new web3.eth.Contract(daoAbi, dao, {
-            from: web3.eth.defaultAccount,
-            gasPrice: "13837084066"
-        });
-        return [2 /*return*/, daoContract.methods.lockedUntil(account)];
+        daoContract = new ethers_1.Contract(dao, daoAbi, provider);
+        return [2 /*return*/, daoContract.lockedUntil(account)];
     });
 }); };
 exports.getLockedUntil = getLockedUntil;
@@ -213,11 +189,8 @@ exports.getLockedUntil = getLockedUntil;
 var getEpoch = function (dao) { return __awaiter(void 0, void 0, void 0, function () {
     var daoContract;
     return __generator(this, function (_a) {
-        daoContract = new web3.eth.Contract(daoAbi, dao, {
-            from: web3.eth.defaultAccount,
-            gasPrice: "13837084066"
-        });
-        return [2 /*return*/, daoContract.methods.epoch()];
+        daoContract = new ethers_1.Contract(dao, daoAbi, provider);
+        return [2 /*return*/, daoContract.epoch()];
     });
 }); };
 exports.getEpoch = getEpoch;
@@ -229,11 +202,8 @@ exports.getEpoch = getEpoch;
 var getEpochTime = function (dao) { return __awaiter(void 0, void 0, void 0, function () {
     var daoContract;
     return __generator(this, function (_a) {
-        daoContract = new web3.eth.Contract(daoAbi, dao, {
-            from: web3.eth.defaultAccount,
-            gasPrice: "13837084066"
-        });
-        return [2 /*return*/, daoContract.methods.epochTime()];
+        daoContract = new ethers_1.Contract(dao, daoAbi, provider);
+        return [2 /*return*/, daoContract.epochTime()];
     });
 }); };
 exports.getEpochTime = getEpochTime;
@@ -245,11 +215,8 @@ exports.getEpochTime = getEpochTime;
 var getTotalDebt = function (dao) { return __awaiter(void 0, void 0, void 0, function () {
     var daoContract;
     return __generator(this, function (_a) {
-        daoContract = new web3.eth.Contract(daoAbi, dao, {
-            from: web3.eth.defaultAccount,
-            gasPrice: "13837084066"
-        });
-        return [2 /*return*/, daoContract.methods.totalDebt()];
+        daoContract = new ethers_1.Contract(dao, daoAbi, provider);
+        return [2 /*return*/, daoContract.totalDebt()];
     });
 }); };
 exports.getTotalDebt = getTotalDebt;
@@ -261,11 +228,8 @@ exports.getTotalDebt = getTotalDebt;
 var getTotalRedeemable = function (dao) { return __awaiter(void 0, void 0, void 0, function () {
     var daoContract;
     return __generator(this, function (_a) {
-        daoContract = new web3.eth.Contract(daoAbi, dao, {
-            from: web3.eth.defaultAccount,
-            gasPrice: "13837084066"
-        });
-        return [2 /*return*/, daoContract.methods.totalRedeemable()];
+        daoContract = new ethers_1.Contract(dao, daoAbi, provider);
+        return [2 /*return*/, daoContract.totalRedeemable()];
     });
 }); };
 exports.getTotalRedeemable = getTotalRedeemable;
@@ -277,11 +241,8 @@ exports.getTotalRedeemable = getTotalRedeemable;
 var getTotalCoupons = function (dao) { return __awaiter(void 0, void 0, void 0, function () {
     var daoContract;
     return __generator(this, function (_a) {
-        daoContract = new web3.eth.Contract(daoAbi, dao, {
-            from: web3.eth.defaultAccount,
-            gasPrice: "13837084066"
-        });
-        return [2 /*return*/, daoContract.methods.totalCoupons()];
+        daoContract = new ethers_1.Contract(dao, daoAbi, provider);
+        return [2 /*return*/, daoContract.totalCoupons()];
     });
 }); };
 exports.getTotalCoupons = getTotalCoupons;
@@ -293,11 +254,8 @@ exports.getTotalCoupons = getTotalCoupons;
 var getTotalCouponsUnderlying = function (dao) { return __awaiter(void 0, void 0, void 0, function () {
     var daoContract;
     return __generator(this, function (_a) {
-        daoContract = new web3.eth.Contract(daoAbi, dao, {
-            from: web3.eth.defaultAccount,
-            gasPrice: "13837084066"
-        });
-        return [2 /*return*/, daoContract.methods.totalCouponUnderlying()];
+        daoContract = new ethers_1.Contract(dao, daoAbi, provider);
+        return [2 /*return*/, daoContract.totalCouponUnderlying()];
     });
 }); };
 exports.getTotalCouponsUnderlying = getTotalCouponsUnderlying;
@@ -309,13 +267,8 @@ exports.getTotalCouponsUnderlying = getTotalCouponsUnderlying;
 var getTotalBonded = function (dao) { return __awaiter(void 0, void 0, void 0, function () {
     var daoContract;
     return __generator(this, function (_a) {
-        daoContract = new web3.eth.Contract(daoAbi, dao, {
-            from: web3.eth.defaultAccount,
-            gasPrice: "13837084066"
-        });
-        return [2 /*return*/, daoContract.methods
-                .totalBonded()
-                .call({ from: web3.eth.defaultAccount, gasPrice: "13837084066" })];
+        daoContract = new ethers_1.Contract(dao, daoAbi, provider);
+        return [2 /*return*/, daoContract.totalBonded()];
     });
 }); };
 exports.getTotalBonded = getTotalBonded;
@@ -327,11 +280,8 @@ exports.getTotalBonded = getTotalBonded;
 var getTotalStaged = function (dao) { return __awaiter(void 0, void 0, void 0, function () {
     var daoContract;
     return __generator(this, function (_a) {
-        daoContract = new web3.eth.Contract(daoAbi, dao, {
-            from: web3.eth.defaultAccount,
-            gasPrice: "13837084066"
-        });
-        return [2 /*return*/, daoContract.methods.totalStaged()];
+        daoContract = new ethers_1.Contract(dao, daoAbi, provider);
+        return [2 /*return*/, daoContract.totalStaged()];
     });
 }); };
 exports.getTotalStaged = getTotalStaged;
@@ -344,11 +294,8 @@ exports.getTotalStaged = getTotalStaged;
 var getTotalBondedAt = function (dao, epoch) { return __awaiter(void 0, void 0, void 0, function () {
     var daoContract;
     return __generator(this, function (_a) {
-        daoContract = new web3.eth.Contract(daoAbi, dao, {
-            from: web3.eth.defaultAccount,
-            gasPrice: "13837084066"
-        });
-        return [2 /*return*/, daoContract.methods.totalBondedAt(epoch)];
+        daoContract = new ethers_1.Contract(dao, daoAbi, provider);
+        return [2 /*return*/, daoContract.totalBondedAt(epoch)];
     });
 }); };
 exports.getTotalBondedAt = getTotalBondedAt;
@@ -361,11 +308,8 @@ exports.getTotalBondedAt = getTotalBondedAt;
 var getApproveFor = function (dao, candidate) { return __awaiter(void 0, void 0, void 0, function () {
     var daoContract;
     return __generator(this, function (_a) {
-        daoContract = new web3.eth.Contract(daoAbi, dao, {
-            from: web3.eth.defaultAccount,
-            gasPrice: "13837084066"
-        });
-        return [2 /*return*/, daoContract.methods.approveFor(candidate)];
+        daoContract = new ethers_1.Contract(dao, daoAbi, provider);
+        return [2 /*return*/, daoContract.approveFor(candidate)];
     });
 }); };
 exports.getApproveFor = getApproveFor;
@@ -378,11 +322,8 @@ exports.getApproveFor = getApproveFor;
 var getRejectFor = function (dao, candidate) { return __awaiter(void 0, void 0, void 0, function () {
     var daoContract;
     return __generator(this, function (_a) {
-        daoContract = new web3.eth.Contract(daoAbi, dao, {
-            from: web3.eth.defaultAccount,
-            gasPrice: "13837084066"
-        });
-        return [2 /*return*/, daoContract.methods.rejectFor(candidate)];
+        daoContract = new ethers_1.Contract(dao, daoAbi, provider);
+        return [2 /*return*/, daoContract.rejectFor(candidate)];
     });
 }); };
 exports.getRejectFor = getRejectFor;
@@ -395,11 +336,8 @@ exports.getRejectFor = getRejectFor;
 var getStartFor = function (dao, candidate) { return __awaiter(void 0, void 0, void 0, function () {
     var daoContract;
     return __generator(this, function (_a) {
-        daoContract = new web3.eth.Contract(daoAbi, dao, {
-            from: web3.eth.defaultAccount,
-            gasPrice: "13837084066"
-        });
-        return [2 /*return*/, daoContract.methods.startFor(candidate)];
+        daoContract = new ethers_1.Contract(dao, daoAbi, provider);
+        return [2 /*return*/, daoContract.startFor(candidate)];
     });
 }); };
 exports.getStartFor = getStartFor;
@@ -412,11 +350,8 @@ exports.getStartFor = getStartFor;
 var getPeriodFor = function (dao, candidate) { return __awaiter(void 0, void 0, void 0, function () {
     var daoContract;
     return __generator(this, function (_a) {
-        daoContract = new web3.eth.Contract(daoAbi, dao, {
-            from: web3.eth.defaultAccount,
-            gasPrice: "13837084066"
-        });
-        return [2 /*return*/, daoContract.methods.periodFor(candidate)];
+        daoContract = new ethers_1.Contract(dao, daoAbi, provider);
+        return [2 /*return*/, daoContract.periodFor(candidate)];
     });
 }); };
 exports.getPeriodFor = getPeriodFor;
@@ -429,11 +364,8 @@ exports.getPeriodFor = getPeriodFor;
 var getIsInitialized = function (dao, candidate) { return __awaiter(void 0, void 0, void 0, function () {
     var daoContract;
     return __generator(this, function (_a) {
-        daoContract = new web3.eth.Contract(daoAbi, dao, {
-            from: web3.eth.defaultAccount,
-            gasPrice: "13837084066"
-        });
-        return [2 /*return*/, daoContract.methods.isInitialized(candidate)];
+        daoContract = new ethers_1.Contract(dao, daoAbi, provider);
+        return [2 /*return*/, daoContract.isInitialized(candidate)];
     });
 }); };
 exports.getIsInitialized = getIsInitialized;
@@ -447,11 +379,8 @@ exports.getIsInitialized = getIsInitialized;
 var getRecordedVote = function (dao, account, candidate) { return __awaiter(void 0, void 0, void 0, function () {
     var daoContract;
     return __generator(this, function (_a) {
-        daoContract = new web3.eth.Contract(daoAbi, dao, {
-            from: web3.eth.defaultAccount,
-            gasPrice: "13837084066"
-        });
-        return [2 /*return*/, daoContract.methods.recordedVote(account, candidate)];
+        daoContract = new ethers_1.Contract(dao, daoAbi, provider);
+        return [2 /*return*/, daoContract.recordedVote(account, candidate)];
     });
 }); };
 exports.getRecordedVote = getRecordedVote;
@@ -465,11 +394,8 @@ exports.getRecordedVote = getRecordedVote;
 var getBalanceOfCoupons = function (dao, account, epoch) { return __awaiter(void 0, void 0, void 0, function () {
     var daoContract;
     return __generator(this, function (_a) {
-        daoContract = new web3.eth.Contract(daoAbi, dao, {
-            from: web3.eth.defaultAccount,
-            gasPrice: "13837084066"
-        });
-        return [2 /*return*/, daoContract.methods.balanceOfCoupons(account, epoch)];
+        daoContract = new ethers_1.Contract(dao, daoAbi, provider);
+        return [2 /*return*/, daoContract.balanceOfCoupons(account, epoch)];
     });
 }); };
 exports.getBalanceOfCoupons = getBalanceOfCoupons;
@@ -500,11 +426,8 @@ exports.getBatchBalanceOfCoupons = getBatchBalanceOfCoupons;
 var getBalanceOfCouponsUnderlying = function (dao, account, epoch) { return __awaiter(void 0, void 0, void 0, function () {
     var daoContract;
     return __generator(this, function (_a) {
-        daoContract = new web3.eth.Contract(daoAbi, dao, {
-            from: web3.eth.defaultAccount,
-            gasPrice: "13837084066"
-        });
-        return [2 /*return*/, daoContract.methods.balanceOfCouponUnderlying(account, epoch)];
+        daoContract = new ethers_1.Contract(dao, daoAbi, provider);
+        return [2 /*return*/, daoContract.balanceOfCouponUnderlying(account, epoch)];
     });
 }); };
 exports.getBalanceOfCouponsUnderlying = getBalanceOfCouponsUnderlying;
@@ -534,11 +457,8 @@ exports.getBatchBalanceOfCouponsUnderlying = getBatchBalanceOfCouponsUnderlying;
 var getOutstandingCoupons = function (dao, epoch) { return __awaiter(void 0, void 0, void 0, function () {
     var daoContract;
     return __generator(this, function (_a) {
-        daoContract = new web3.eth.Contract(daoAbi, dao, {
-            from: web3.eth.defaultAccount,
-            gasPrice: "13837084066"
-        });
-        return [2 /*return*/, daoContract.methods.outstandingCoupons(epoch)];
+        daoContract = new ethers_1.Contract(dao, daoAbi, provider);
+        return [2 /*return*/, daoContract.outstandingCoupons(epoch)];
     });
 }); };
 exports.getOutstandingCoupons = getOutstandingCoupons;
@@ -551,11 +471,8 @@ exports.getOutstandingCoupons = getOutstandingCoupons;
 var getCouponsExpiration = function (dao, epoch) { return __awaiter(void 0, void 0, void 0, function () {
     var daoContract;
     return __generator(this, function (_a) {
-        daoContract = new web3.eth.Contract(daoAbi, dao, {
-            from: web3.eth.defaultAccount,
-            gasPrice: "13837084066"
-        });
-        return [2 /*return*/, daoContract.methods.couponsExpiration(epoch)];
+        daoContract = new ethers_1.Contract(dao, daoAbi, provider);
+        return [2 /*return*/, daoContract.couponsExpiration(epoch)];
     });
 }); };
 exports.getCouponsExpiration = getCouponsExpiration;
@@ -582,11 +499,8 @@ exports.getBatchCouponsExpiration = getBatchCouponsExpiration;
 var getCouponPremium = function (dao, amount) { return __awaiter(void 0, void 0, void 0, function () {
     var daoContract;
     return __generator(this, function (_a) {
-        daoContract = new web3.eth.Contract(daoAbi, dao, {
-            from: web3.eth.defaultAccount,
-            gasPrice: "13837084066"
-        });
-        return [2 /*return*/, daoContract.methods.couponPremium(new bignumber_js_1.BigNumber(amount))];
+        daoContract = new ethers_1.Contract(dao, daoAbi, provider);
+        return [2 /*return*/, daoContract.couponPremium(new bignumber_js_1["default"](amount).toFixed())];
     });
 }); };
 exports.getCouponPremium = getCouponPremium;
@@ -598,11 +512,8 @@ exports.getCouponPremium = getCouponPremium;
 var getImplementation = function (dao) { return __awaiter(void 0, void 0, void 0, function () {
     var daoContract;
     return __generator(this, function (_a) {
-        daoContract = new web3.eth.Contract(daoAbi, dao, {
-            from: web3.eth.defaultAccount,
-            gasPrice: "13837084066"
-        });
-        return [2 /*return*/, daoContract.methods.implementation()];
+        daoContract = new ethers_1.Contract(dao, daoAbi, provider);
+        return [2 /*return*/, daoContract.implementation()];
     });
 }); };
 exports.getImplementation = getImplementation;
@@ -614,11 +525,8 @@ exports.getImplementation = getImplementation;
 var getPool = function (dao) { return __awaiter(void 0, void 0, void 0, function () {
     var daoContract;
     return __generator(this, function (_a) {
-        daoContract = new web3.eth.Contract(daoAbi, dao, {
-            from: web3.eth.defaultAccount,
-            gasPrice: "13837084066"
-        });
-        return [2 /*return*/, daoContract.methods.pool()];
+        daoContract = new ethers_1.Contract(dao, daoAbi, provider);
+        return [2 /*return*/, daoContract.pool()];
     });
 }); };
 exports.getPool = getPool;
@@ -629,22 +537,14 @@ exports.getPool = getPool;
  * @return {Promise<any[]>}
  */
 var getCouponEpochs = function (dao, account) { return __awaiter(void 0, void 0, void 0, function () {
-    var provider, daoContract, blockNumber, purchaseP, transferP, _a, bought, given, events, couponEpochs;
+    var daoContract, blockNumber, purchaseP, transferP, _a, bought, given, events, couponEpochs;
     return __generator(this, function (_b) {
         switch (_b.label) {
             case 0:
-                provider = {
-                    from: web3.eth.defaultAccount,
-                    gasPrice: "13837084066"
-                };
-                daoContract = new web3.eth.Contract(daoAbi, dao, provider);
+                daoContract = new ethers_1.Contract(dao, daoAbi, provider);
                 blockNumber = 16022755;
-                purchaseP = daoContract.getPastEvents("CouponPurchase", {
-                    fromBlock: blockNumber
-                });
-                transferP = daoContract.getPastEvents("CouponTransfer", {
-                    fromBlock: blockNumber
-                });
+                purchaseP = daoContract.queryFilter(daoContract.filters.CouponPurchase(), blockNumber);
+                transferP = daoContract.queryFilter(daoContract.filters.CouponTransfer(), blockNumber);
                 return [4 /*yield*/, Promise.all([purchaseP, transferP])];
             case 1:
                 _a = _b.sent(), bought = _a[0], given = _a[1];
@@ -691,11 +591,8 @@ var getAllProposals = function (dao) { return __awaiter(void 0, void 0, void 0, 
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                daoContract = new web3.eth.Contract(daoAbi, dao, {
-                    from: web3.eth.defaultAccount,
-                    gasPrice: "13837084066"
-                });
-                return [4 /*yield*/, daoContract.methods.getPastEvents("Proposal", {
+                daoContract = new ethers_1.Contract(dao, daoAbi, provider);
+                return [4 /*yield*/, daoContract.getPastEvents("Proposal", {
                         fromBlock: 0
                     })];
             case 1:
@@ -715,31 +612,18 @@ exports.getAllProposals = getAllProposals;
  * @return {Promise<any[]>}
  */
 var getAllRegulations = function (dao) { return __awaiter(void 0, void 0, void 0, function () {
-    var provider, daoContract, block, blockNumber, increaseP, decreaseP, neutralP, _a, increase, decrease, neutral, events;
+    var daoContract, block, blockNumber, increaseP, decreaseP, neutralP, _a, increase, decrease, neutral, events;
     return __generator(this, function (_b) {
         switch (_b.label) {
             case 0:
-                provider = {
-                    from: web3.eth.defaultAccount,
-                    gasPrice: "13837084066"
-                };
-                daoContract = new web3.eth.Contract(daoAbi, dao, provider);
-                return [4 /*yield*/, web3.eth.getBlockNumber().then(function (block) { return block; })];
+                daoContract = new ethers_1.Contract(dao, daoAbi, provider);
+                return [4 /*yield*/, provider.getBlockNumber()];
             case 1:
                 block = _b.sent();
-                blockNumber = block - 10000;
-                increaseP = daoContract.getPastEvents("SupplyIncrease", {
-                    fromBlock: blockNumber,
-                    toBlock: block
-                });
-                decreaseP = daoContract.getPastEvents("SupplyDecrease", {
-                    fromBlock: blockNumber,
-                    toBlock: block
-                });
-                neutralP = daoContract.getPastEvents("SupplyNeutral", {
-                    fromBlock: blockNumber,
-                    toBlock: block
-                });
+                blockNumber = block - 3000;
+                increaseP = daoContract.queryFilter(daoContract.filters.SupplyIncrease(), blockNumber);
+                decreaseP = daoContract.queryFilter(daoContract.filters.SupplyDecrease(), blockNumber);
+                neutralP = daoContract.queryFilter(daoContract.filters.SupplyNeutral(), blockNumber);
                 return [4 /*yield*/, Promise.all([
                         increaseP,
                         decreaseP,
@@ -748,70 +632,30 @@ var getAllRegulations = function (dao) { return __awaiter(void 0, void 0, void 0
             case 2:
                 _a = _b.sent(), increase = _a[0], decrease = _a[1], neutral = _a[2];
                 events = increase
-                    .map(function (e) { return ({ type: "INCREASE", data: e.returnValues }); })
+                    .map(function (e) { return ({ type: "INCREASE", data: e.args }); })
                     .concat(decrease.map(function (e) { return ({
                     type: "DECREASE",
-                    data: e.returnValues
+                    data: e.args
                 }); }))
                     .concat(neutral.map(function (e) { return ({
                     type: "NEUTRAL",
-                    data: e.returnValues
+                    data: e.args
                 }); }));
-                return [2 /*return*/, events.sort(function (a, b) { var _a, _b; return ((_a = b.data) === null || _a === void 0 ? void 0 : _a.epoch) - ((_b = a.data) === null || _b === void 0 ? void 0 : _b.epoch); })];
+                return [2 /*return*/, events.sort(function (a, b) { return b.data.epoch - a.data.epoch; })];
         }
     });
 }); };
 exports.getAllRegulations = getAllRegulations;
-// Uniswap Protocol
-var getCost = function (amount) { return __awaiter(void 0, void 0, void 0, function () {
-    var exchange, _a, inputAmount, _;
-    return __generator(this, function (_b) {
-        switch (_b.label) {
-            case 0:
-                exchange = new web3.eth.Contract(contracts_1.UniswapV2Router02, uniswapRouterAbi, {
-                    from: web3.eth.defaultAccount,
-                    gasPrice: "13837084066"
-                });
-                return [4 /*yield*/, exchange.getAmountsIn(new bignumber_js_1.BigNumber(amount).toFixed(), [tokens_1.USDC.addr, tokens_1.ESD.addr])];
-            case 1:
-                _a = _b.sent(), inputAmount = _a[0], _ = _a[1];
-                return [2 /*return*/, inputAmount];
-        }
-    });
-}); };
-exports.getCost = getCost;
-var getProceeds = function (amount) { return __awaiter(void 0, void 0, void 0, function () {
-    var exchange, _a, _, outputAmount;
-    return __generator(this, function (_b) {
-        switch (_b.label) {
-            case 0:
-                exchange = new web3.eth.Contract(contracts_1.UniswapV2Router02, uniswapRouterAbi, {
-                    from: web3.eth.defaultAccount,
-                    gasPrice: "13837084066"
-                });
-                return [4 /*yield*/, exchange.getAmountsOut(new bignumber_js_1.BigNumber(amount).toFixed(), [tokens_1.ESD.addr, tokens_1.USDC.addr])];
-            case 1:
-                _a = _b.sent(), _ = _a[0], outputAmount = _a[1];
-                return [2 /*return*/, outputAmount];
-        }
-    });
-}); };
-exports.getProceeds = getProceeds;
 var getReserves = function () { return __awaiter(void 0, void 0, void 0, function () {
     var exchange, error_1;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                exchange = new web3.eth.Contract(curveAbi, tokens_1.UNI.addr, {
-                    from: web3.eth.defaultAccount,
-                    gasPrice: "13837084066"
-                });
+                exchange = new ethers_1.Contract(tokens_1.UNI.addr, metaPoolAbi, provider);
                 _a.label = 1;
             case 1:
                 _a.trys.push([1, 3, , 4]);
-                return [4 /*yield*/, exchange.methods
-                        .get_balances()
-                        .call({ from: web3.eth.defaultAccount, gasPrice: "13837084066" })];
+                return [4 /*yield*/, exchange.get_balances()];
             case 2: return [2 /*return*/, _a.sent()];
             case 3:
                 error_1 = _a.sent();
@@ -823,60 +667,51 @@ var getReserves = function () { return __awaiter(void 0, void 0, void 0, functio
 }); };
 exports.getReserves = getReserves;
 var getThreeCRVPrice = function () { return __awaiter(void 0, void 0, void 0, function () {
-    var threePool, error_2;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
+    var threePool, _a, _b, error_2;
+    return __generator(this, function (_c) {
+        switch (_c.label) {
             case 0:
-                threePool = new web3.eth.Contract(metaPoolAbi, "0xbebc44782c7db0a1a60cb6fe97d0b483032ff1c7", {
-                    from: web3.eth.defaultAccount,
-                    gasPrice: "13837084066"
-                });
-                _a.label = 1;
+                _a = ethers_1.Contract.bind;
+                _b = [void 0, "0x1337BedC9D22ecbe766dF105c9623922A27963EC",
+                    metaPoolAbi];
+                return [4 /*yield*/, provider];
             case 1:
-                _a.trys.push([1, 3, , 4]);
-                return [4 /*yield*/, threePool.methods
-                        .get_virtual_price()
-                        .call({ from: web3.eth.defaultAccount, gasPrice: "13837084066" })];
-            case 2: return [2 /*return*/, _a.sent()];
-            case 3:
-                error_2 = _a.sent();
+                threePool = new (_a.apply(ethers_1.Contract, _b.concat([_c.sent()])))();
+                _c.label = 2;
+            case 2:
+                _c.trys.push([2, 4, , 5]);
+                return [4 /*yield*/, threePool.get_virtual_price()];
+            case 3: return [2 /*return*/, _c.sent()];
+            case 4:
+                error_2 = _c.sent();
                 console.log(error_2);
-                return [3 /*break*/, 4];
-            case 4: return [2 /*return*/];
+                return [3 /*break*/, 5];
+            case 5: return [2 /*return*/];
         }
     });
 }); };
 exports.getThreeCRVPrice = getThreeCRVPrice;
 var getInstantaneousPrice = function () { return __awaiter(void 0, void 0, void 0, function () {
     var exchange, threePool, _a, threeCRVPrice, TPrice, price, error_3;
-    return __generator(this, function (_b) {
-        switch (_b.label) {
+    var _b;
+    return __generator(this, function (_c) {
+        switch (_c.label) {
             case 0:
-                exchange = new web3.eth.Contract(metaPoolAbi, tokens_1.UNI.addr, {
-                    from: web3.eth.defaultAccount,
-                    gasPrice: "13837084066"
-                });
-                threePool = new web3.eth.Contract(metaPoolAbi, "0xbebc44782c7db0a1a60cb6fe97d0b483032ff1c7", {
-                    from: web3.eth.defaultAccount,
-                    gasPrice: "13837084066"
-                });
-                _b.label = 1;
+                exchange = new ethers_1.Contract(tokens_1.UNI.addr, metaPoolAbi, provider);
+                threePool = new ethers_1.Contract("0x1337BedC9D22ecbe766dF105c9623922A27963EC", metaPoolAbi, provider);
+                _c.label = 1;
             case 1:
-                _b.trys.push([1, 3, , 4]);
+                _c.trys.push([1, 3, , 4]);
                 return [4 /*yield*/, Promise.all([
-                        threePool.methods
-                            .get_virtual_price()
-                            .call({ from: web3.eth.defaultAccount, gasPrice: "13837084066" }),
-                        exchange.methods
-                            .get_dy(0, 1, (0, utils_1.parseEther)("1"))
-                            .call({ from: web3.eth.defaultAccount, gasPrice: "13837084066" }),
+                        threePool.get_virtual_price(),
+                        exchange.get_dy(0, 1, (0, utils_1.parseEther)("1")),
                     ])];
             case 2:
-                _a = _b.sent(), threeCRVPrice = _a[0], TPrice = _a[1];
-                price = (0, number_1.formatBN)((0, number_1.toTokenUnitsBN)(threeCRVPrice, tokens_1.USDC.decimals).multipliedBy((0, number_1.toTokenUnitsBN)(TPrice, tokens_1.USDC.decimals)), 8);
+                _a = _c.sent(), threeCRVPrice = _a[0], TPrice = _a[1];
+                price = (_b = (0, number_1.toTokenUnitsBN)(threeCRVPrice, tokens_1.USDC.decimals)) === null || _b === void 0 ? void 0 : _b.multipliedBy((0, number_1.toTokenUnitsBN)(TPrice, tokens_1.USDC.decimals));
                 return [2 /*return*/, price];
             case 3:
-                error_3 = _b.sent();
+                error_3 = _c.sent();
                 console.log(error_3);
                 return [3 /*break*/, 4];
             case 4: return [2 /*return*/];
@@ -887,10 +722,7 @@ exports.getInstantaneousPrice = getInstantaneousPrice;
 var getToken0 = function () { return __awaiter(void 0, void 0, void 0, function () {
     var exchange;
     return __generator(this, function (_a) {
-        exchange = new web3.eth.Contract(tokens_1.UNI.addr, metaPoolAbi, {
-            from: web3.eth.defaultAccount,
-            gasPrice: "13837084066"
-        });
+        exchange = new ethers_1.Contract(tokens_1.UNI.addr, metaPoolAbi, provider);
         return [2 /*return*/, exchange.coins(0)];
     });
 }); };
@@ -899,10 +731,7 @@ exports.getToken0 = getToken0;
 var getPoolStatusOf = function (pool, account) { return __awaiter(void 0, void 0, void 0, function () {
     var poolContract;
     return __generator(this, function (_a) {
-        poolContract = new web3.eth.Contract(pool, poolAbi, {
-            from: web3.eth.defaultAccount,
-            gasPrice: "13837084066"
-        });
+        poolContract = new ethers_1.Contract(pool, poolAbi, provider);
         return [2 /*return*/, poolContract.statusOf(account)];
     });
 }); };
@@ -918,10 +747,7 @@ var getPoolBalanceOfBonded = function (pool, account) { return __awaiter(void 0,
     return __generator(this, function (_a) {
         if (account === "")
             return [2 /*return*/, "0"];
-        poolContract = new web3.eth.Contract(pool, poolAbi, {
-            from: web3.eth.defaultAccount,
-            gasPrice: "13837084066"
-        });
+        poolContract = new ethers_1.Contract(pool, poolAbi, provider);
         return [2 /*return*/, poolContract.balanceOfBonded(account)];
     });
 }); };
@@ -935,10 +761,7 @@ exports.getPoolBalanceOfBonded = getPoolBalanceOfBonded;
 var getPoolBalanceOfStaged = function (pool, account) { return __awaiter(void 0, void 0, void 0, function () {
     var poolContract;
     return __generator(this, function (_a) {
-        poolContract = new web3.eth.Contract(pool, poolAbi, {
-            from: web3.eth.defaultAccount,
-            gasPrice: "13837084066"
-        });
+        poolContract = new ethers_1.Contract(pool, poolAbi, provider);
         return [2 /*return*/, poolContract.balanceOfStaged(account)];
     });
 }); };
@@ -952,12 +775,7 @@ exports.getPoolBalanceOfStaged = getPoolBalanceOfStaged;
 var getPoolBalanceOfRewarded = function (pool, account) { return __awaiter(void 0, void 0, void 0, function () {
     var poolContract;
     return __generator(this, function (_a) {
-        if (account === "")
-            return [2 /*return*/, "0"];
-        poolContract = new web3.eth.Contract(pool, poolAbi, {
-            from: web3.eth.defaultAccount,
-            gasPrice: "13837084066"
-        });
+        poolContract = new ethers_1.Contract(pool, poolAbi, provider);
         return [2 /*return*/, poolContract.balanceOfRewarded(account)];
     });
 }); };
@@ -971,10 +789,7 @@ exports.getPoolBalanceOfRewarded = getPoolBalanceOfRewarded;
 var getPoolBalanceOfClaimable = function (pool, account) { return __awaiter(void 0, void 0, void 0, function () {
     var poolContract;
     return __generator(this, function (_a) {
-        poolContract = new web3.eth.Contract(pool, poolAbi, {
-            from: web3.eth.defaultAccount,
-            gasPrice: "13837084066"
-        });
+        poolContract = new ethers_1.Contract(pool, poolAbi, provider);
         return [2 /*return*/, poolContract.balanceOfClaimable(account)];
     });
 }); };
@@ -988,10 +803,7 @@ exports.getPoolBalanceOfClaimable = getPoolBalanceOfClaimable;
 var getPoolTotalBonded = function (pool) { return __awaiter(void 0, void 0, void 0, function () {
     var poolContract;
     return __generator(this, function (_a) {
-        poolContract = new web3.eth.Contract(pool, poolAbi, {
-            from: web3.eth.defaultAccount,
-            gasPrice: "13837084066"
-        });
+        poolContract = new ethers_1.Contract(pool, poolAbi, provider);
         return [2 /*return*/, poolContract.totalBonded()];
     });
 }); };
@@ -1005,10 +817,7 @@ exports.getPoolTotalBonded = getPoolTotalBonded;
 var getPoolTotalRewarded = function (pool) { return __awaiter(void 0, void 0, void 0, function () {
     var poolContract;
     return __generator(this, function (_a) {
-        poolContract = new web3.eth.Contract(pool, poolAbi, {
-            from: web3.eth.defaultAccount,
-            gasPrice: "13837084066"
-        });
+        poolContract = new ethers_1.Contract(pool, poolAbi, provider);
         return [2 /*return*/, poolContract.totalRewarded()];
     });
 }); };
@@ -1022,10 +831,7 @@ exports.getPoolTotalRewarded = getPoolTotalRewarded;
 var getPoolTotalClaimable = function (pool) { return __awaiter(void 0, void 0, void 0, function () {
     var poolContract;
     return __generator(this, function (_a) {
-        poolContract = new web3.eth.Contract(pool, poolAbi, {
-            from: web3.eth.defaultAccount,
-            gasPrice: "13837084066"
-        });
+        poolContract = new ethers_1.Contract(pool, poolAbi, provider);
         return [2 /*return*/, poolContract.totalClaimable()];
     });
 }); };
@@ -1041,10 +847,7 @@ var getPoolFluidUntil = function (pool, account) { return __awaiter(void 0, void
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                poolContract = new web3.eth.Contract(pool, poolAbi, {
-                    from: web3.eth.defaultAccount,
-                    gasPrice: "13837084066"
-                });
+                poolContract = new ethers_1.Contract(pool, poolAbi, provider);
                 return [4 /*yield*/, poolContract.fluidUntil(account)];
             case 1:
                 fluidUntil = _a.sent();
@@ -1063,9 +866,8 @@ var getForgeYield = function () { return __awaiter(void 0, void 0, void 0, funct
                 ])];
             case 1:
                 _a = _b.sent(), totalBonded = _a[0], totalSupply = _a[1];
-                return [2 /*return*/, new bignumber_js_1.BigNumber(0.005)
-                        .div(new bignumber_js_1.BigNumber(totalBonded.toString())
-                        .div(new bignumber_js_1.BigNumber(totalSupply.toString())))
+                return [2 /*return*/, new bignumber_js_1["default"](0.005)
+                        .div(new bignumber_js_1["default"](totalBonded.toString()).div(new bignumber_js_1["default"](totalSupply.toString())))
                         .times(100)];
         }
     });
@@ -1073,26 +875,20 @@ var getForgeYield = function () { return __awaiter(void 0, void 0, void 0, funct
 exports.getForgeYield = getForgeYield;
 var getPoolYield = function () { return __awaiter(void 0, void 0, void 0, function () {
     var _a, tPrice, regs, tvl;
-    var _b, _c;
-    return __generator(this, function (_d) {
-        switch (_d.label) {
+    var _b;
+    return __generator(this, function (_c) {
+        switch (_c.label) {
             case 0: return [4 /*yield*/, Promise.all([
                     (0, exports.getInstantaneousPrice)(),
                     (0, exports.getAllRegulations)(tokens_1.ESDS.addr),
                     (0, exports.getPoolTVL)(),
                 ])];
             case 1:
-                _a = _d.sent(), tPrice = _a[0], regs = _a[1], tvl = _a[2];
-                if ((_b = regs[0].data) === null || _b === void 0 ? void 0 : _b.newBonded) {
-                    return [2 /*return*/, new bignumber_js_1.BigNumber((_c = regs[0].data) === null || _c === void 0 ? void 0 : _c.newBonded)
-                            .div(tvl)
-                            .times(tPrice)
-                            .times(100)];
-                }
-                else {
-                    return [2 /*return*/, (0, number_1.formatBN)(new bignumber_js_1.BigNumber(0), 2)];
-                }
-                return [2 /*return*/];
+                _a = _c.sent(), tPrice = _a[0], regs = _a[1], tvl = _a[2];
+                return [2 /*return*/, tPrice
+                        .times(new bignumber_js_1["default"]((0, utils_1.formatEther)(regs.length !== 0 ? (_b = regs[0]) === null || _b === void 0 ? void 0 : _b.data.newBonded : 0)).div(2))
+                        .div(tvl)
+                        .times(100)];
         }
     });
 }); };
@@ -1107,8 +903,8 @@ var getForgeTVL = function () { return __awaiter(void 0, void 0, void 0, functio
                 ])];
             case 1:
                 _a = _b.sent(), totalBonded = _a[0], price = _a[1];
-                return [2 /*return*/, new bignumber_js_1.BigNumber((0, utils_1.formatEther)(totalBonded))
-                        .times(new bignumber_js_1.BigNumber(price))
+                return [2 /*return*/, new bignumber_js_1["default"]((0, utils_1.formatEther)(totalBonded))
+                        .times(new bignumber_js_1["default"](price))
                         .toFixed()];
         }
     });
@@ -1127,9 +923,9 @@ var getPoolTVL = function () { return __awaiter(void 0, void 0, void 0, function
                 ])];
             case 1:
                 _a = _b.sent(), reserves = _a[0], threeCRVPrice = _a[1], price = _a[2], totalLpPool = _a[3], totalLpSupply = _a[4];
-                return [2 /*return*/, new bignumber_js_1.BigNumber((0, utils_1.formatEther)(reserves[0]))
+                return [2 /*return*/, new bignumber_js_1["default"]((0, utils_1.formatEther)(reserves[0]))
                         .times(price)
-                        .plus(new bignumber_js_1.BigNumber((0, utils_1.formatEther)(reserves[1])).times(new bignumber_js_1.BigNumber((0, utils_1.formatEther)(threeCRVPrice))))
+                        .plus(new bignumber_js_1["default"]((0, utils_1.formatEther)(reserves[1])).times(new bignumber_js_1["default"]((0, utils_1.formatEther)(threeCRVPrice))))
                         .div((0, utils_1.formatEther)(totalLpSupply))
                         .times((0, utils_1.formatEther)(totalLpPool))
                         .toFixed()];
@@ -1147,8 +943,17 @@ var getTotalTVL = function () { return __awaiter(void 0, void 0, void 0, functio
                 ])];
             case 1:
                 _a = _b.sent(), forgeTotal = _a[0], poolTotal = _a[1];
-                return [2 /*return*/, (0, number_1.formatBN)(new bignumber_js_1.BigNumber(forgeTotal).plus(poolTotal), 2)];
+                return [2 /*return*/, (0, number_1.formatBN)(new bignumber_js_1["default"](forgeTotal).plus(poolTotal), 2)];
         }
     });
 }); };
 exports.getTotalTVL = getTotalTVL;
+var getStats = function () { return __awaiter(void 0, void 0, void 0, function () {
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, fetch("https://api.optiprotocol.xyz/stats")];
+            case 1: return [2 /*return*/, (_a.sent()).json()];
+        }
+    });
+}); };
+exports.getStats = getStats;

@@ -57,7 +57,7 @@ app.get("/stats", function (req, res) { return __awaiter(void 0, void 0, void 0,
                         forgeYield: values[2],
                         forgeTvl: values[3],
                         poolYield: values[4],
-                        poolTvl: values[5]
+                        poolTvl: values[4]
                     });
                 })];
             case 1:

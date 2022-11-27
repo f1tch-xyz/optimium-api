@@ -21,7 +21,7 @@ app.get("/stats", async (req: any, res: any) => {
       forgeYield: values[2],
       forgeTvl: values[3],
       poolYield: values[4],
-      poolTvl: values[5]
+      poolTvl: values[4]
     });
   });
 });

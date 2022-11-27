@@ -1,55 +1,41 @@
-import { UniswapV2Router02 } from "../constants/contracts";
+import BigNumber from "bignumber.js";
+import { Contract, ethers } from "ethers";
+import { formatEther, Interface, parseEther } from "ethers/lib/utils";
 import { ESD, ESDS, UNI, USDC } from "../constants/tokens";
-import { formatBN, toBaseUnitBN, toTokenUnitsBN } from "../utils/number";
-import { formatEther, parseEther } from "ethers/lib/utils";
-import { BigNumber } from "bignumber.js"
 import { POOL } from "../constants/values";
-import * as uniswapV2Router02 from "../abi/uniswapV2Router02.json";
-import * as titanium from "../abi/titanium.json";
+import { formatBN, toTokenUnitsBN } from "../utils/number";
+
+import * as dao from "../abi/dao.json";
 import * as metaPool from "../abi/metaPool.json";
 import * as pool from "../abi/pool.json";
-import * as dao from "../abi/dao.json";
-import * as curve from "../abi/curve.json";
-import * as dotenv from 'dotenv';
+import * as titanium from "../abi/titanium.json";
 
-dotenv.config()
-
-let fs = require("fs");
-let Web3 = require("web3"); // https://www.npmjs.com/package/web3
-
-let web3 = new Web3();
-
-web3.setProvider(new web3.providers.HttpProvider(process.env.ALCHEMY_URL));
-
-let uniswapRouterAbi = uniswapV2Router02.abi;
-let titaniumAbi = titanium.abi;
-let metaPoolAbi = metaPool.abi;
 let daoAbi = dao.abi;
-let curveAbi = curve.abi;
+let metaPoolAbi = metaPool.abi as any;
 let poolAbi = pool.abi;
+let titaniumAbi = titanium.abi;
 
+let provider = new ethers.providers.AlchemyProvider(
+  "optimism",
+  "I_98yCaFloxo_XxxRCjQ1tanl4IcVXs3"
+);
+
+/**
+ *
+ * @param {string} token address
+ * @param {string} account address
+ * @return {Promise<string>}
+ */
 export const getTokenBalance = async (token: any, account: any) => {
   if (account === "") return "0";
-  const tokenContract = new web3.eth.Contract(titaniumAbi, token, {
-    from: web3.eth.defaultAccount,
-    gasPrice: "13837084066",
-  });
-  
-  return tokenContract.methods
-    .balanceOf(account)
-    .call({ from: web3.eth.defaultAccount, gasPrice: "13837084066" });
+  const tokenContract = new Contract(token, titaniumAbi, provider);
+  return tokenContract.balanceOf(account);
 };
 
 export const getTokenTotalSupply = async (token: any) => {
-  const tokenContract = new web3.eth.Contract(titaniumAbi, token, {
-    from: web3.eth.defaultAccount,
-    gasPrice: "13837084066",
-  });
-  return tokenContract.methods
-    .totalSupply()
-    .call({ from: web3.eth.defaultAccount, gasPrice: "13837084066" });
+  const tokenContract = new Contract(token, titaniumAbi, await provider);
+  return tokenContract.totalSupply();
 };
-
 /**
  *
  * @param {string} token
@@ -62,10 +48,7 @@ export const getTokenAllowance = async (
   account: any,
   spender: any
 ) => {
-  const tokenContract = new web3.eth.Contract(metaPoolAbi, token, {
-    from: web3.eth.defaultAccount,
-    gasPrice: "13837084066",
-  });
+  const tokenContract = new Contract(token, titaniumAbi, provider);
   return tokenContract.allowance(account, spender);
 };
 
@@ -79,11 +62,8 @@ export const getTokenAllowance = async (
  */
 export const getBalanceBonded = async (dao: any, account: any) => {
   if (account === "") return "0";
-  const daoContract = new web3.eth.Contract(daoAbi, dao, {
-    from: web3.eth.defaultAccount,
-    gasPrice: "13837084066",
-  });
-  return daoContract.methods.balanceOfBonded(account);
+  const daoContract = new Contract(dao, daoAbi, provider);
+  return daoContract.balanceOfBonded(account);
 };
 
 /**
@@ -93,11 +73,8 @@ export const getBalanceBonded = async (dao: any, account: any) => {
  * @return {Promise<string>}
  */
 export const getBalanceOfStaged = async (dao: any, account: any) => {
-  const daoContract = new web3.eth.Contract(daoAbi, dao, {
-    from: web3.eth.defaultAccount,
-    gasPrice: "13837084066",
-  });
-  return daoContract.methods.balanceOfStaged(account);
+  const daoContract = new Contract(dao, daoAbi, provider);
+  return daoContract.balanceOfStaged(account);
 };
 
 /**
@@ -107,11 +84,8 @@ export const getBalanceOfStaged = async (dao: any, account: any) => {
  * @return {Promise<string>}
  */
 export const getStatusOf = async (dao: any, account: any) => {
-  const daoContract = new web3.eth.Contract(daoAbi, dao, {
-    from: web3.eth.defaultAccount,
-    gasPrice: "13837084066",
-  });
-  return daoContract.methods.statusOf(account);
+  const daoContract = new Contract(dao, daoAbi, provider);
+  return daoContract.statusOf(account);
 };
 
 /**
@@ -121,11 +95,8 @@ export const getStatusOf = async (dao: any, account: any) => {
  * @return {Promise<string>}
  */
 export const getFluidUntil = async (dao: any, account: any) => {
-  const daoContract = new web3.eth.Contract(daoAbi, dao, {
-    from: web3.eth.defaultAccount,
-    gasPrice: "13837084066",
-  });
-  return daoContract.methods.fluidUntil(account);
+  const daoContract = new Contract(dao, daoAbi, provider);
+  return daoContract.fluidUntil(account);
 };
 
 /**
@@ -135,11 +106,8 @@ export const getFluidUntil = async (dao: any, account: any) => {
  * @return {Promise<string>}
  */
 export const getLockedUntil = async (dao: any, account: any) => {
-  const daoContract = new web3.eth.Contract(daoAbi, dao, {
-    from: web3.eth.defaultAccount,
-    gasPrice: "13837084066",
-  });
-  return daoContract.methods.lockedUntil(account);
+  const daoContract = new Contract(dao, daoAbi, provider);
+  return daoContract.lockedUntil(account);
 };
 
 /**
@@ -148,11 +116,8 @@ export const getLockedUntil = async (dao: any, account: any) => {
  * @return {Promise<string>}
  */
 export const getEpoch = async (dao: any) => {
-  const daoContract = new web3.eth.Contract(daoAbi, dao, {
-    from: web3.eth.defaultAccount,
-    gasPrice: "13837084066",
-  });
-  return daoContract.methods.epoch();
+  const daoContract = new Contract(dao, daoAbi, provider);
+  return daoContract.epoch();
 };
 
 /**
@@ -161,11 +126,8 @@ export const getEpoch = async (dao: any) => {
  * @return {Promise<string>}
  */
 export const getEpochTime = async (dao: any) => {
-  const daoContract = new web3.eth.Contract(daoAbi, dao, {
-    from: web3.eth.defaultAccount,
-    gasPrice: "13837084066",
-  });
-  return daoContract.methods.epochTime();
+  const daoContract = new Contract(dao, daoAbi, provider);
+  return daoContract.epochTime();
 };
 
 /**
@@ -174,11 +136,8 @@ export const getEpochTime = async (dao: any) => {
  * @return {Promise<string>}
  */
 export const getTotalDebt = async (dao: any) => {
-  const daoContract = new web3.eth.Contract(daoAbi, dao, {
-    from: web3.eth.defaultAccount,
-    gasPrice: "13837084066",
-  });
-  return daoContract.methods.totalDebt();
+  const daoContract = new Contract(dao, daoAbi, provider);
+  return daoContract.totalDebt();
 };
 
 /**
@@ -187,11 +146,8 @@ export const getTotalDebt = async (dao: any) => {
  * @return {Promise<string>}
  */
 export const getTotalRedeemable = async (dao: any) => {
-  const daoContract = new web3.eth.Contract(daoAbi, dao, {
-    from: web3.eth.defaultAccount,
-    gasPrice: "13837084066",
-  });
-  return daoContract.methods.totalRedeemable();
+  const daoContract = new Contract(dao, daoAbi, provider);
+  return daoContract.totalRedeemable();
 };
 
 /**
@@ -200,11 +156,8 @@ export const getTotalRedeemable = async (dao: any) => {
  * @return {Promise<string>}
  */
 export const getTotalCoupons = async (dao: any) => {
-  const daoContract = new web3.eth.Contract(daoAbi, dao, {
-    from: web3.eth.defaultAccount,
-    gasPrice: "13837084066",
-  });
-  return daoContract.methods.totalCoupons();
+  const daoContract = new Contract(dao, daoAbi, provider);
+  return daoContract.totalCoupons();
 };
 
 /**
@@ -213,11 +166,8 @@ export const getTotalCoupons = async (dao: any) => {
  * @return {Promise<string>}
  */
 export const getTotalCouponsUnderlying = async (dao: any) => {
-  const daoContract = new web3.eth.Contract(daoAbi, dao, {
-    from: web3.eth.defaultAccount,
-    gasPrice: "13837084066",
-  });
-  return daoContract.methods.totalCouponUnderlying();
+  const daoContract = new Contract(dao, daoAbi, provider);
+  return daoContract.totalCouponUnderlying();
 };
 
 /**
@@ -226,13 +176,8 @@ export const getTotalCouponsUnderlying = async (dao: any) => {
  * @return {Promise<string>}
  */
 export const getTotalBonded = async (dao: any) => {
-  const daoContract = new web3.eth.Contract(daoAbi, dao, {
-    from: web3.eth.defaultAccount,
-    gasPrice: "13837084066",
-  });
-  return daoContract.methods
-    .totalBonded()
-    .call({ from: web3.eth.defaultAccount, gasPrice: "13837084066" });
+  const daoContract = new Contract(dao, daoAbi, provider);
+  return daoContract.totalBonded();
 };
 
 /**
@@ -241,11 +186,8 @@ export const getTotalBonded = async (dao: any) => {
  * @return {Promise<string>}
  */
 export const getTotalStaged = async (dao: any) => {
-  const daoContract = new web3.eth.Contract(daoAbi, dao, {
-    from: web3.eth.defaultAccount,
-    gasPrice: "13837084066",
-  });
-  return daoContract.methods.totalStaged();
+  const daoContract = new Contract(dao, daoAbi, provider);
+  return daoContract.totalStaged();
 };
 
 /**
@@ -255,11 +197,8 @@ export const getTotalStaged = async (dao: any) => {
  * @return {Promise<string>}
  */
 export const getTotalBondedAt = async (dao: any, epoch: any) => {
-  const daoContract = new web3.eth.Contract(daoAbi, dao, {
-    from: web3.eth.defaultAccount,
-    gasPrice: "13837084066",
-  });
-  return daoContract.methods.totalBondedAt(epoch);
+  const daoContract = new Contract(dao, daoAbi, provider);
+  return daoContract.totalBondedAt(epoch);
 };
 
 /**
@@ -269,11 +208,8 @@ export const getTotalBondedAt = async (dao: any, epoch: any) => {
  * @return {Promise<string>}
  */
 export const getApproveFor = async (dao: any, candidate: any) => {
-  const daoContract = new web3.eth.Contract(daoAbi, dao, {
-    from: web3.eth.defaultAccount,
-    gasPrice: "13837084066",
-  });
-  return daoContract.methods.approveFor(candidate);
+  const daoContract = new Contract(dao, daoAbi, provider);
+  return daoContract.approveFor(candidate);
 };
 
 /**
@@ -283,11 +219,8 @@ export const getApproveFor = async (dao: any, candidate: any) => {
  * @return {Promise<string>}
  */
 export const getRejectFor = async (dao: any, candidate: any) => {
-  const daoContract = new web3.eth.Contract(daoAbi, dao, {
-    from: web3.eth.defaultAccount,
-    gasPrice: "13837084066",
-  });
-  return daoContract.methods.rejectFor(candidate);
+  const daoContract = new Contract(dao, daoAbi, provider);
+  return daoContract.rejectFor(candidate);
 };
 
 /**
@@ -297,11 +230,8 @@ export const getRejectFor = async (dao: any, candidate: any) => {
  * @return {Promise<string>}
  */
 export const getStartFor = async (dao: any, candidate: any) => {
-  const daoContract = new web3.eth.Contract(daoAbi, dao, {
-    from: web3.eth.defaultAccount,
-    gasPrice: "13837084066",
-  });
-  return daoContract.methods.startFor(candidate);
+  const daoContract = new Contract(dao, daoAbi, provider);
+  return daoContract.startFor(candidate);
 };
 
 /**
@@ -311,11 +241,8 @@ export const getStartFor = async (dao: any, candidate: any) => {
  * @return {Promise<string>}
  */
 export const getPeriodFor = async (dao: any, candidate: any) => {
-  const daoContract = new web3.eth.Contract(daoAbi, dao, {
-    from: web3.eth.defaultAccount,
-    gasPrice: "13837084066",
-  });
-  return daoContract.methods.periodFor(candidate);
+  const daoContract = new Contract(dao, daoAbi, provider);
+  return daoContract.periodFor(candidate);
 };
 
 /**
@@ -325,11 +252,8 @@ export const getPeriodFor = async (dao: any, candidate: any) => {
  * @return {Promise<boolean>}
  */
 export const getIsInitialized = async (dao: any, candidate: any) => {
-  const daoContract = new web3.eth.Contract(daoAbi, dao, {
-    from: web3.eth.defaultAccount,
-    gasPrice: "13837084066",
-  });
-  return daoContract.methods.isInitialized(candidate);
+  const daoContract = new Contract(dao, daoAbi, provider);
+  return daoContract.isInitialized(candidate);
 };
 
 /**
@@ -344,11 +268,8 @@ export const getRecordedVote = async (
   account: any,
   candidate: any
 ) => {
-  const daoContract = new web3.eth.Contract(daoAbi, dao, {
-    from: web3.eth.defaultAccount,
-    gasPrice: "13837084066",
-  });
-  return daoContract.methods.recordedVote(account, candidate);
+  const daoContract = new Contract(dao, daoAbi, provider);
+  return daoContract.recordedVote(account, candidate);
 };
 
 /**
@@ -363,11 +284,8 @@ export const getBalanceOfCoupons = async (
   account: any,
   epoch: any
 ) => {
-  const daoContract = new web3.eth.Contract(daoAbi, dao, {
-    from: web3.eth.defaultAccount,
-    gasPrice: "13837084066",
-  });
-  return daoContract.methods.balanceOfCoupons(account, epoch);
+  const daoContract = new Contract(dao, daoAbi, provider);
+  return daoContract.balanceOfCoupons(account, epoch);
 };
 
 /**
@@ -400,11 +318,8 @@ export const getBalanceOfCouponsUnderlying = async (
   account: any,
   epoch: any
 ) => {
-  const daoContract = new web3.eth.Contract(daoAbi, dao, {
-    from: web3.eth.defaultAccount,
-    gasPrice: "13837084066",
-  });
-  return daoContract.methods.balanceOfCouponUnderlying(account, epoch);
+  const daoContract = new Contract(dao, daoAbi, provider);
+  return daoContract.balanceOfCouponUnderlying(account, epoch);
 };
 
 /**
@@ -432,11 +347,8 @@ export const getBatchBalanceOfCouponsUnderlying = async (
  * @return {Promise<string>}
  */
 export const getOutstandingCoupons = async (dao: any, epoch: any) => {
-  const daoContract = new web3.eth.Contract(daoAbi, dao, {
-    from: web3.eth.defaultAccount,
-    gasPrice: "13837084066",
-  });
-  return daoContract.methods.outstandingCoupons(epoch);
+  const daoContract = new Contract(dao, daoAbi, provider);
+  return daoContract.outstandingCoupons(epoch);
 };
 
 /**
@@ -446,11 +358,8 @@ export const getOutstandingCoupons = async (dao: any, epoch: any) => {
  * @return {Promise<string>}
  */
 export const getCouponsExpiration = async (dao: any, epoch: any) => {
-  const daoContract = new web3.eth.Contract(daoAbi, dao, {
-    from: web3.eth.defaultAccount,
-    gasPrice: "13837084066",
-  });
-  return daoContract.methods.couponsExpiration(epoch);
+  const daoContract = new Contract(dao, daoAbi, provider);
+  return daoContract.couponsExpiration(epoch);
 };
 
 /**
@@ -471,11 +380,8 @@ export const getBatchCouponsExpiration = async (dao: any, epochs: any) => {
  * @return {Promise<string>}
  */
 export const getCouponPremium = async (dao: any, amount: any) => {
-  const daoContract = new web3.eth.Contract(daoAbi, dao, {
-    from: web3.eth.defaultAccount,
-    gasPrice: "13837084066",
-  });
-  return daoContract.methods.couponPremium(new BigNumber(amount));
+  const daoContract = new Contract(dao, daoAbi, provider);
+  return daoContract.couponPremium(new BigNumber(amount).toFixed());
 };
 
 /**
@@ -484,11 +390,8 @@ export const getCouponPremium = async (dao: any, amount: any) => {
  * @return {Promise<string>}
  */
 export const getImplementation = async (dao: any) => {
-  const daoContract = new web3.eth.Contract(daoAbi, dao, {
-    from: web3.eth.defaultAccount,
-    gasPrice: "13837084066",
-  });
-  return daoContract.methods.implementation();
+  const daoContract = new Contract(dao, daoAbi, provider);
+  return daoContract.implementation();
 };
 
 /**
@@ -497,11 +400,8 @@ export const getImplementation = async (dao: any) => {
  * @return {Promise<string>}
  */
 export const getPool = async (dao: any) => {
-  const daoContract = new web3.eth.Contract(daoAbi, dao, {
-    from: web3.eth.defaultAccount,
-    gasPrice: "13837084066",
-  });
-  return daoContract.methods.pool();
+  const daoContract = new Contract(dao, daoAbi, provider);
+  return daoContract.pool();
 };
 
 /**
@@ -511,24 +411,18 @@ export const getPool = async (dao: any) => {
  * @return {Promise<any[]>}
  */
 export const getCouponEpochs = async (dao: any, account: any) => {
-  const provider = {
-    from: web3.eth.defaultAccount,
-    gasPrice: "13837084066",
-  };
-  const daoContract = new web3.eth.Contract(daoAbi, dao, provider);
+  const daoContract = new Contract(dao, daoAbi, provider);
   // const block = await provider.getBlockNumber()
   const blockNumber = 16022755;
-
-  const purchaseP = daoContract.getPastEvents("CouponPurchase", {
-    fromBlock: blockNumber
-  })
-
-  const transferP = daoContract.getPastEvents("CouponTransfer", {
-    fromBlock: blockNumber
-  })
-
+  const purchaseP = daoContract.queryFilter(
+    daoContract.filters.CouponPurchase(),
+    blockNumber
+  );
+  const transferP = daoContract.queryFilter(
+    daoContract.filters.CouponTransfer(),
+    blockNumber
+  );
   const [bought, given] = await Promise.all([purchaseP, transferP]);
-  
   const events = bought
     .map((e: any) => ({
       account: e.args.account,
@@ -545,7 +439,7 @@ export const getCouponEpochs = async (dao: any, account: any) => {
 
   const couponEpochs = [
     ...events
-      .reduce((map: any, event: any) => {
+      .reduce((map: any, event) => {
         const { account, epoch, amount } = event;
         const prev = map.get(epoch);
 
@@ -573,12 +467,9 @@ export const getCouponEpochs = async (dao: any, account: any) => {
  * @return {Promise<any[]>}
  */
 export const getAllProposals = async (dao: any) => {
-  const daoContract = new web3.eth.Contract(daoAbi, dao, {
-    from: web3.eth.defaultAccount,
-    gasPrice: "13837084066",
-  });
+  const daoContract = new Contract(dao, daoAbi, provider);
   const payload = (
-    await daoContract.methods.getPastEvents("Proposal", {
+    await daoContract.getPastEvents("Proposal", {
       fromBlock: 0,
     })
   ).map((event: any) => {
@@ -595,144 +486,84 @@ export const getAllProposals = async (dao: any) => {
  * @return {Promise<any[]>}
  */
 export const getAllRegulations = async (dao: any) => {
-  const provider = {
-    from: web3.eth.defaultAccount,
-    gasPrice: "13837084066",
-  };
-  const daoContract = new web3.eth.Contract(daoAbi, dao, provider);
-  const block = await web3.eth.getBlockNumber().then((block: any) => block);
-  const blockNumber = block - 10000;
-  
-  const increaseP = daoContract.getPastEvents("SupplyIncrease", {
-    fromBlock: blockNumber,
-    toBlock: block
-  })
-
-  const decreaseP = daoContract.getPastEvents("SupplyDecrease", {
-    fromBlock: blockNumber,
-    toBlock: block
-  })
-
-  const neutralP = daoContract.getPastEvents("SupplyNeutral", {
-    fromBlock: blockNumber,
-    toBlock: block
-  })
+  const daoContract = new Contract(dao, daoAbi, provider);
+  const block = await provider.getBlockNumber();
+  const blockNumber = block - 3000;
+  const increaseP = daoContract.queryFilter(
+    daoContract.filters.SupplyIncrease(),
+    blockNumber
+  );
+  const decreaseP = daoContract.queryFilter(
+    daoContract.filters.SupplyDecrease(),
+    blockNumber
+  );
+  const neutralP = daoContract.queryFilter(
+    daoContract.filters.SupplyNeutral(),
+    blockNumber
+  );
 
   const [increase, decrease, neutral] = await Promise.all([
     increaseP,
     decreaseP,
     neutralP,
   ]);
-  
+
   const events = increase
-    .map((e: any) => ({ type: "INCREASE", data: e.returnValues }))
+    .map((e: any) => ({ type: "INCREASE", data: e.args }))
     .concat(
       decrease.map((e: any) => ({
         type: "DECREASE",
-        data: e.returnValues,
+        data: e.args,
       }))
     )
     .concat(
       neutral.map((e: any) => ({
         type: "NEUTRAL",
-        data: e.returnValues,
+        data: e.args,
       }))
     );
 
-  return events.sort((a: any, b: any) => b.data?.epoch - a.data?.epoch);
-};
-
-// Uniswap Protocol
-
-export const getCost = async (amount: any) => {
-  const exchange = new web3.eth.Contract(UniswapV2Router02, uniswapRouterAbi, {
-    from: web3.eth.defaultAccount,
-    gasPrice: "13837084066",
-  });
-  // eslint-disable-next-line no-unused-vars
-  const [inputAmount, _] = await exchange.getAmountsIn(
-    new BigNumber(amount).toFixed(),
-    [USDC.addr, ESD.addr]
-  );
-
-  return inputAmount;
-};
-
-export const getProceeds = async (amount: any) => {
-  const exchange = new web3.eth.Contract(UniswapV2Router02, uniswapRouterAbi, {
-    from: web3.eth.defaultAccount,
-    gasPrice: "13837084066",
-  });
-  // eslint-disable-next-line no-unused-vars
-  const [_, outputAmount] = await exchange.getAmountsOut(
-    new BigNumber(amount).toFixed(),
-    [ESD.addr, USDC.addr]
-  );
-
-  return outputAmount;
+  return events.sort((a, b) => b.data.epoch - a.data.epoch);
 };
 
 export const getReserves = async () => {
-  const exchange = new web3.eth.Contract(curveAbi, UNI.addr, {
-    from: web3.eth.defaultAccount,
-    gasPrice: "13837084066",
-  });
+  const exchange = new Contract(UNI.addr, metaPoolAbi, provider);
   try {
-    return await exchange.methods
-      .get_balances()
-      .call({ from: web3.eth.defaultAccount, gasPrice: "13837084066" });
+    return await exchange.get_balances();
   } catch (error) {
     console.log(error);
   }
 };
 
 export const getThreeCRVPrice = async () => {
-  const threePool = new web3.eth.Contract(
+  const threePool = new Contract(
+    "0x1337BedC9D22ecbe766dF105c9623922A27963EC",
     metaPoolAbi,
-    "0xbebc44782c7db0a1a60cb6fe97d0b483032ff1c7", {
-      from: web3.eth.defaultAccount,
-      gasPrice: "13837084066",
-    }
+    await provider
   );
   try {
-    return await threePool.methods
-      .get_virtual_price()
-      .call({ from: web3.eth.defaultAccount, gasPrice: "13837084066" });
+    return await threePool.get_virtual_price();
   } catch (error) {
     console.log(error);
   }
 };
 
 export const getInstantaneousPrice = async () => {
-  const exchange = new web3.eth.Contract(metaPoolAbi, UNI.addr, {
-    from: web3.eth.defaultAccount, // default from address
-    gasPrice: "13837084066",
-  });
-
-  const threePool = new web3.eth.Contract(
+  const exchange = new Contract(UNI.addr, metaPoolAbi, provider);
+  const threePool = new Contract(
+    "0x1337BedC9D22ecbe766dF105c9623922A27963EC",
     metaPoolAbi,
-    "0xbebc44782c7db0a1a60cb6fe97d0b483032ff1c7",
-    {
-      from: web3.eth.defaultAccount,
-      gasPrice: "13837084066",
-    }
+    provider
   );
 
   try {
     const [threeCRVPrice, TPrice] = await Promise.all([
-      threePool.methods
-        .get_virtual_price()
-        .call({ from: web3.eth.defaultAccount, gasPrice: "13837084066" }),
-      exchange.methods
-        .get_dy(0, 1, parseEther("1"))
-        .call({ from: web3.eth.defaultAccount, gasPrice: "13837084066" }),
+      threePool.get_virtual_price(),
+      exchange.get_dy(0, 1, parseEther("1")),
     ]);
 
-    const price = formatBN(
-      toTokenUnitsBN(threeCRVPrice, USDC.decimals).multipliedBy(
-        toTokenUnitsBN(TPrice, USDC.decimals)
-      ),
-      8
+    const price = toTokenUnitsBN(threeCRVPrice, USDC.decimals)?.multipliedBy(
+      toTokenUnitsBN(TPrice, USDC.decimals)
     );
 
     return price;
@@ -742,20 +573,14 @@ export const getInstantaneousPrice = async () => {
 };
 
 export const getToken0 = async () => {
-  const exchange = new web3.eth.Contract(UNI.addr, metaPoolAbi, {
-    from: web3.eth.defaultAccount,
-    gasPrice: "13837084066",
-  });
+  const exchange = new Contract(UNI.addr, metaPoolAbi, provider);
   return exchange.coins(0);
 };
 
 // Pool
 
 export const getPoolStatusOf = async (pool: any, account: any) => {
-  const poolContract = new web3.eth.Contract(pool, poolAbi, {
-    from: web3.eth.defaultAccount,
-    gasPrice: "13837084066",
-  });
+  const poolContract = new Contract(pool, poolAbi, provider);
   return poolContract.statusOf(account);
 };
 
@@ -767,10 +592,7 @@ export const getPoolStatusOf = async (pool: any, account: any) => {
  */
 export const getPoolBalanceOfBonded = async (pool: any, account: any) => {
   if (account === "") return "0";
-  const poolContract = new web3.eth.Contract(pool, poolAbi, {
-    from: web3.eth.defaultAccount,
-    gasPrice: "13837084066",
-  });
+  const poolContract = new Contract(pool, poolAbi, provider);
   return poolContract.balanceOfBonded(account);
 };
 
@@ -781,10 +603,7 @@ export const getPoolBalanceOfBonded = async (pool: any, account: any) => {
  * @return {Promise<string>}
  */
 export const getPoolBalanceOfStaged = async (pool: any, account: any) => {
-  const poolContract = new web3.eth.Contract(pool, poolAbi, {
-    from: web3.eth.defaultAccount,
-    gasPrice: "13837084066",
-  });
+  const poolContract = new Contract(pool, poolAbi, provider);
   return poolContract.balanceOfStaged(account);
 };
 
@@ -795,11 +614,7 @@ export const getPoolBalanceOfStaged = async (pool: any, account: any) => {
  * @return {Promise<string>}
  */
 export const getPoolBalanceOfRewarded = async (pool: any, account: any) => {
-  if (account === "") return "0";
-  const poolContract = new web3.eth.Contract(pool, poolAbi, {
-    from: web3.eth.defaultAccount,
-    gasPrice: "13837084066",
-  });
+  const poolContract = new Contract(pool, poolAbi, provider);
   return poolContract.balanceOfRewarded(account);
 };
 
@@ -810,10 +625,7 @@ export const getPoolBalanceOfRewarded = async (pool: any, account: any) => {
  * @return {Promise<string>}
  */
 export const getPoolBalanceOfClaimable = async (pool: any, account: any) => {
-  const poolContract = new web3.eth.Contract(pool, poolAbi, {
-    from: web3.eth.defaultAccount,
-    gasPrice: "13837084066",
-  });
+  const poolContract = new Contract(pool, poolAbi, provider);
   return poolContract.balanceOfClaimable(account);
 };
 
@@ -824,10 +636,7 @@ export const getPoolBalanceOfClaimable = async (pool: any, account: any) => {
  * @return {Promise<string>}
  */
 export const getPoolTotalBonded = async (pool: any) => {
-  const poolContract = new web3.eth.Contract(pool, poolAbi, {
-    from: web3.eth.defaultAccount,
-    gasPrice: "13837084066",
-  });
+  const poolContract = new Contract(pool, poolAbi, provider);
   return poolContract.totalBonded();
 };
 
@@ -838,10 +647,7 @@ export const getPoolTotalBonded = async (pool: any) => {
  * @return {Promise<string>}
  */
 export const getPoolTotalRewarded = async (pool: any) => {
-  const poolContract = new web3.eth.Contract(pool, poolAbi, {
-    from: web3.eth.defaultAccount,
-    gasPrice: "13837084066",
-  });
+  const poolContract = new Contract(pool, poolAbi, provider);
   return poolContract.totalRewarded();
 };
 
@@ -852,10 +658,7 @@ export const getPoolTotalRewarded = async (pool: any) => {
  * @return {Promise<string>}
  */
 export const getPoolTotalClaimable = async (pool: any) => {
-  const poolContract = new web3.eth.Contract(pool, poolAbi, {
-    from: web3.eth.defaultAccount,
-    gasPrice: "13837084066",
-  });
+  const poolContract = new Contract(pool, poolAbi, provider);
   return poolContract.totalClaimable();
 };
 
@@ -866,10 +669,7 @@ export const getPoolTotalClaimable = async (pool: any) => {
  * @return {Promise<string>}
  */
 export const getPoolFluidUntil = async (pool: any, account: any) => {
-  const poolContract = new web3.eth.Contract(pool, poolAbi, {
-    from: web3.eth.defaultAccount,
-    gasPrice: "13837084066",
-  });
+  const poolContract = new Contract(pool, poolAbi, provider);
 
   const fluidUntil = await poolContract.fluidUntil(account);
 
@@ -883,8 +683,11 @@ export const getForgeYield = async () => {
   ]);
 
   return new BigNumber(0.005)
-    .div(new BigNumber(totalBonded.toString())
-    .div(new BigNumber(totalSupply.toString())))
+    .div(
+      new BigNumber(totalBonded.toString()).div(
+        new BigNumber(totalSupply.toString())
+      )
+    )
     .times(100);
 };
 
@@ -895,14 +698,10 @@ export const getPoolYield = async () => {
     getPoolTVL(),
   ]);
 
-  if(regs[0].data?.newBonded) {
-    return new BigNumber(regs[0].data?.newBonded)
-      .div(tvl)
-      .times(tPrice)
-      .times(100);
-  } else {
-    return formatBN(new BigNumber(0), 2);
-  }
+  return tPrice
+    .times(new BigNumber(formatEther(regs.length !== 0 ? regs[0]?.data.newBonded : 0)).div(2))
+    .div(tvl)
+    .times(100);
 };
 
 export const getForgeTVL = async () => {
@@ -943,6 +742,9 @@ export const getTotalTVL = async () => {
     getForgeTVL(),
     getPoolTVL(),
   ]);
-
   return formatBN(new BigNumber(forgeTotal).plus(poolTotal), 2);
+};
+
+export const getStats = async () => {
+  return (await fetch("https://api.optiprotocol.xyz/stats")).json();
 };
