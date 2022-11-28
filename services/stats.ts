@@ -488,7 +488,8 @@ export const getAllProposals = async (dao: any) => {
 export const getAllRegulations = async (dao: any) => {
   const daoContract = new Contract(dao, daoAbi, provider);
   const block = await provider.getBlockNumber();
-  const blockNumber = block - 3000;
+  
+  const blockNumber = block - 300000;
   const increaseP = daoContract.queryFilter(
     daoContract.filters.SupplyIncrease(),
     blockNumber
@@ -522,7 +523,7 @@ export const getAllRegulations = async (dao: any) => {
         data: e.args,
       }))
     );
-
+    
   return events.sort((a, b) => b.data.epoch - a.data.epoch);
 };
 
@@ -700,7 +701,11 @@ export const getPoolYield = async () => {
   ]);
 
   return tPrice
-    .times(new BigNumber(formatEther(regs.length !== 0 ? regs[0]?.data.newBonded : 0)).div(2))
+    .times(
+      new BigNumber(
+        formatEther(regs.length > 0 ? regs[0].data.newBonded : 0)
+      ).div(2)
+    )
     .div(tvl)
     .times(100);
 };

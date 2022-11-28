@@ -620,7 +620,7 @@ var getAllRegulations = function (dao) { return __awaiter(void 0, void 0, void 0
                 return [4 /*yield*/, provider.getBlockNumber()];
             case 1:
                 block = _b.sent();
-                blockNumber = block - 3000;
+                blockNumber = block - 300000;
                 increaseP = daoContract.queryFilter(daoContract.filters.SupplyIncrease(), blockNumber);
                 decreaseP = daoContract.queryFilter(daoContract.filters.SupplyDecrease(), blockNumber);
                 neutralP = daoContract.queryFilter(daoContract.filters.SupplyNeutral(), blockNumber);
@@ -875,18 +875,17 @@ var getForgeYield = function () { return __awaiter(void 0, void 0, void 0, funct
 exports.getForgeYield = getForgeYield;
 var getPoolYield = function () { return __awaiter(void 0, void 0, void 0, function () {
     var _a, tPrice, regs, tvl;
-    var _b;
-    return __generator(this, function (_c) {
-        switch (_c.label) {
+    return __generator(this, function (_b) {
+        switch (_b.label) {
             case 0: return [4 /*yield*/, Promise.all([
                     (0, exports.getInstantaneousPrice)(),
                     (0, exports.getAllRegulations)(tokens_1.ESDS.addr),
                     (0, exports.getPoolTVL)(),
                 ])];
             case 1:
-                _a = _c.sent(), tPrice = _a[0], regs = _a[1], tvl = _a[2];
+                _a = _b.sent(), tPrice = _a[0], regs = _a[1], tvl = _a[2];
                 return [2 /*return*/, tPrice
-                        .times(new bignumber_js_1["default"]((0, utils_1.formatEther)(regs.length !== 0 ? (_b = regs[0]) === null || _b === void 0 ? void 0 : _b.data.newBonded : 0)).div(2))
+                        .times(new bignumber_js_1["default"]((0, utils_1.formatEther)(regs.length > 0 ? regs[0].data.newBonded : 0)).div(2))
                         .div(tvl)
                         .times(100)];
         }
