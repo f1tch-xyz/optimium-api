@@ -550,6 +550,7 @@ export const getThreeCRVPrice = async () => {
 
 export const getInstantaneousPrice = async () => {
   const exchange = new Contract(UNI.addr, metaPoolAbi, provider);
+
   const threePool = new Contract(
     "0x1337BedC9D22ecbe766dF105c9623922A27963EC",
     metaPoolAbi,

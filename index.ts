@@ -6,9 +6,10 @@ const app = express();
 app.listen(8000, () => {});
 
 app.get("/stats", async (req: any, res: any) => {
-
+  res.set('Access-Control-Allow-Origin', '*');
+  
   await Promise.all([
-    getInstantaneousPrice(), 
+    getInstantaneousPrice(),
     getTotalTVL(), 
     getForgeYield(), 
     getForgeTVL(), 
